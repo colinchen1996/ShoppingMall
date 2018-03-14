@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qdu.dao.ProductypeInfoDao">
+  <resultMap id="BaseResultMap" type="cn.qdu.entity.ProductypeInfo">
+    <id column="productTypeId" jdbcType="INTEGER" property="productTypeId" />
+    <result column="productType" jdbcType="VARCHAR" property="productType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    productTypeId, productType
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from productypeinfo
+    where productTypeId = #{productTypeId,jdbcType=INTEGER}
+  </select>
+  
+  
+  
+  <select id="selectAllProductType" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from productypeinfo
+  </select>
+  <select id="selectProductType" parameterType="cn.qdu.entity.ProductypeInfo"  resultType="java.lang.Integer">
+    select count(*) from productypeinfo
+    where productTypeId=#{productTypeId,jdbcType=INTEGER} or productType=#{productType,jdbcType=VARCHAR}
+  </select>
+  <select id="selectProductTypeIdByType" resultType="java.lang.Integer">
+    select productTypeId from productypeinfo
+    where productType=#{productType,jdbcType=VARCHAR}
+  </select>
+  
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from productypeinfo
+    where productTypeId = #{productTypeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.qdu.entity.ProductypeInfo">
+    insert into productypeinfo (productTypeId, productType)
+    values (#{productTypeId,jdbcType=INTEGER}, #{productType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.qdu.entity.ProductypeInfo">
+    insert into productypeinfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productTypeId != null">
+        productTypeId,
+      </if>
+      <if test="productType != null">
+        productType,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productTypeId != null">
+        #{productTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="productType != null">
+        #{productType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.qdu.entity.ProductypeInfo">
+    update productypeinfo
+    <set>
+      <if test="productType != null">
+        productType = #{productType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where productTypeId = #{productTypeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.qdu.entity.ProductypeInfo">
+    update productypeinfo
+    set productType = #{productType,jdbcType=VARCHAR}
+    where productTypeId = #{productTypeId,jdbcType=INTEGER}
+  </update>
+</mapper>

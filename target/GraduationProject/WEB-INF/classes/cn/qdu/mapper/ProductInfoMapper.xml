@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qdu.dao.ProductInfoDao">
+  <resultMap id="ProductInfoResultMap" type="cn.qdu.entity.ProductInfo">
+    <id column="productId" jdbcType="INTEGER" property="productId" />
+    <result column="productName" jdbcType="VARCHAR" property="productName" />
+    <result column="productPrice" jdbcType="REAL" property="productPrice" />
+    <result column="productInventory" jdbcType="INTEGER" property="productInventory" />
+    <result column="productDetail" jdbcType="VARCHAR" property="productDetail" />
+    <result column="defaultImg" jdbcType="VARCHAR" property="defaultImg" />
+    <association property="productTypeInfo" resultMap="ProductTypeResultMap"></association>
+  </resultMap>
+  <resultMap id="ProductTypeResultMap" type="cn.qdu.entity.ProductypeInfo">
+    <id column="productTypeId" jdbcType="INTEGER" property="productTypeId" />
+    <result column="productType" jdbcType="VARCHAR" property="productType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    productId, productName, productPrice, productInventory, productDetail, productTypeId, 
+    defaultImg
+  </sql>
+  
+  
+  <select id="selectProductCount" resultType="java.lang.Integer">
+    select count(*) from productinfo
+  </select>
+  <select id="selectProductByPage" resultMap="ProductInfoResultMap">
+    select p.*,t.productType from productinfo p,productypeinfo t where p.productTypeId=t.productTypeId 
+    order by productId
+    limit #{0},#{1}
+  </select>
+  <select id="selectProduct" parameterType="cn.qdu.entity.ProductInfo" resultType="java.lang.Integer">
+    select count(*) from productinfo
+    where productId = #{productId,jdbcType=INTEGER} or productName = #{productName,jdbcType=VARCHAR}
+  </select>
+  <update id="updateInventory">
+    update productinfo
+    set productInventory = #{1}
+    where productId = #{0}
+  </update>
+  <update id="updatePrice">
+    update productinfo
+    set productPrice = #{1}
+    where productId = #{0}
+  </update>
+  
+  
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ProductInfoResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from productinfo
+    where productId = #{productId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from productinfo
+    where productId = #{productId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.qdu.entity.ProductInfo">
+    insert into productinfo (productId, productName, productPrice, 
+      productInventory, productDetail, productTypeId, 
+      defaultImg)
+    values (#{productId,jdbcType=INTEGER}, #{productName,jdbcType=VARCHAR}, #{productPrice,jdbcType=REAL}, 
+      #{productInventory,jdbcType=INTEGER}, #{productDetail,jdbcType=VARCHAR}, #{productTypeInfo.productTypeId,jdbcType=INTEGER}, 
+      #{defaultImg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.qdu.entity.ProductInfo">
+    insert into productinfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        productId,
+      </if>
+      <if test="productName != null">
+        productName,
+      </if>
+      <if test="productPrice != null">
+        productPrice,
+      </if>
+      <if test="productInventory != null">
+        productInventory,
+      </if>
+      <if test="productDetail != null">
+        productDetail,
+      </if>
+      <if test="productTypeId != null">
+        productTypeId,
+      </if>
+      <if test="defaultImg != null">
+        defaultImg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null">
+        #{productPrice,jdbcType=REAL},
+      </if>
+      <if test="productInventory != null">
+        #{productInventory,jdbcType=INTEGER},
+      </if>
+      <if test="productDetail != null">
+        #{productDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="productTypeId != null">
+        #{productTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="defaultImg != null">
+        #{defaultImg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.qdu.entity.ProductInfo">
+    update productinfo
+    <set>
+      <if test="productName != null">
+        productName = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null">
+        productPrice = #{productPrice,jdbcType=REAL},
+      </if>
+      <if test="productInventory != null">
+        productInventory = #{productInventory,jdbcType=INTEGER},
+      </if>
+      <if test="productDetail != null">
+        productDetail = #{productDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="productTypeId != null">
+        productTypeId = #{productTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="defaultImg != null">
+        defaultImg = #{defaultImg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where productId = #{productId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.qdu.entity.ProductInfo">
+    update productinfo
+    set productName = #{productName,jdbcType=VARCHAR},
+      productPrice = #{productPrice,jdbcType=REAL},
+      productInventory = #{productInventory,jdbcType=INTEGER},
+      productDetail = #{productDetail,jdbcType=VARCHAR},
+      productTypeId = #{productTypeId,jdbcType=INTEGER},
+      defaultImg = #{defaultImg,jdbcType=VARCHAR}
+    where productId = #{productId,jdbcType=INTEGER}
+  </update>
+</mapper>

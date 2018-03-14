@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qdu.dao.OrderItemDao">
+  <resultMap id="OrderItemResultMap" type="cn.qdu.entity.OrderItem">
+    <result column="orderId" jdbcType="INTEGER" property="orderId" />
+    <!--<result column="productId" jdbcType="INTEGER" property="productId" />-->
+    <result column="productCount" jdbcType="INTEGER" property="productCount" />
+    <association property="productInfo" resultMap="ProductInfoResultMap"></association>
+  </resultMap>
+  <resultMap id="ProductInfoResultMap" type="cn.qdu.entity.ProductInfo">
+    <id column="productId" jdbcType="INTEGER" property="productId" />
+    <result column="productName" jdbcType="VARCHAR" property="productName" />
+    <result column="productPrice" jdbcType="REAL" property="productPrice" />
+    <result column="productInventory" jdbcType="INTEGER" property="productInventory" />
+    <result column="productDetail" jdbcType="VARCHAR" property="productDetail" />
+    <result column="defaultImg" jdbcType="VARCHAR" property="defaultImg" />
+    <association property="productTypeInfo" resultMap="ProductTypeResultMap"></association>
+  </resultMap>
+  <resultMap id="ProductTypeResultMap" type="cn.qdu.entity.ProductypeInfo">
+    <id column="productTypeId" jdbcType="INTEGER" property="productTypeId" />
+    <result column="productType" jdbcType="VARCHAR" property="productType" />
+  </resultMap>
+  
+  
+  
+  <insert id="insert" parameterType="cn.qdu.entity.OrderItem">
+    insert into orderitem (orderId, productId, productCount
+      )
+    values (#{orderId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, #{productCount,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.qdu.entity.OrderItem">
+    insert into orderitem
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        orderId,
+      </if>
+      <if test="productId != null">
+        productId,
+      </if>
+      <if test="productCount != null">
+        productCount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null">
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="productCount != null">
+        #{productCount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>

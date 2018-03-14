@@ -1,0 +1,188 @@
+
+
+h6{text-align: center;line-height: 40px}
+#Checkout{
+    width:1210px;
+    height: auto;
+    margin: 15px auto;
+    border: solid 1px #eeeeee;
+    /*border:1px solid gainsboro;*/
+}
+#Checkout #content1{
+    width: 1140px;
+    height: 60px;
+    margin:35px 35px 0 35px;
+    background-color:#fafbf9;
+    /*border:1px solid gainsboro;*/
+}
+
+#Checkout .content2{
+    width: 1140px;
+    height: 60px;
+    margin:0 35px 0 35px;
+    text-align: center;
+}
+#Checkout #content3{
+    width: 1210px;
+    line-height: 40px;
+    height:180px;
+    font-size: medium;
+    text-align: right;
+}
+#Checkout #content4{
+    width: 1210px;
+    height:30px;
+    margin-bottom: 30px;
+}
+#Checkout #content1 .name2{
+    float: left;
+    width: 100px;
+    height: 60px;
+    border: solid #eeeeee 1px;
+    background-color:#fafbf9;
+    /*border:solid 1px #fff;*/
+}
+#Checkout #content1 .name3{
+    float: left;
+    width: 280px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    background-color:#fafbf9;
+    /*border:solid 1px #fff;*/
+}
+#Checkout #content1 .name4{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    background-color:#fafbf9;
+    /*border:solid 1px #fff;*/
+}
+#Checkout #content1 .name5{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    background-color:#fafbf9;
+}
+#Checkout #content1 .name6{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    background-color:#fafbf9;
+}
+#Checkout #content1 .name7{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    background-color:#fafbf9;
+}
+#Checkout #content1 h6{
+    text-align: center;
+}
+#Checkout .content2 .name21{
+    float: left;
+    width: 100px;
+    height: 60px;
+    border: solid #eeeeee 1px;
+}
+#Checkout .content2 .name31{
+    float: left;
+    width: 280px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    /*border:1px solid gainsboro;*/
+}
+#Checkout .content2 .name41{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    /*border:1px solid gainsboro;*/
+}
+#Checkout .content2 .name41 #name41_1{
+    margin-left: 45px;
+}
+#Checkout .content2 .name51_1{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    /*border:1px solid gainsboro;*/
+}
+#Checkout .content2 .name51{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+    /*border:1px solid gainsboro;*/
+}
+#Checkout #content2 .name61{
+    float: left;
+    width: 190px;
+    height:60px;
+    border: solid #eeeeee 1px;
+}
+#Checkout .content2 .a{
+    display: block;
+    float: left;
+    margin-top: 25px;
+    margin-left: 3px;
+    width:30px;
+    height: 20px;
+}
+#Checkout .content2 .b{
+    display: block;
+    float: left;
+    margin-top:25px;
+    padding: 0px;
+    width:30px;
+    height: 20px;
+}
+#Checkout .content2 .text{
+    display: block;
+    float: left;
+    margin-top: 25px;
+    padding: 0px;
+    width:40px;
+    height: 17px;
+    text-align: center;
+}
+#Checkout .content2 h2{
+    text-align: center;
+}
+#Checkout #content3 .name3_1{
+    width: 180px;
+    float:left;
+    height: 40px;
+    border: solid #eeeeee 1px;
+    margin-left: 815px;
+    padding-right: 20px;
+}
+#Checkout #content3 .name3_2 {
+    float:left;
+    width: 180px;
+    height: 40px;
+    padding-right: 20px;
+    border: solid #eeeeee 1px;
+}
+#Checkout #content3 .name3_2_0 {
+    float:left;
+    width: 180px;
+    height: 40px;
+    padding-right: 20px;
+    border: solid #eeeeee 1px;
+}
+#Checkout #content3 .name3_2_1 {
+    float:left;
+    width: 180px;
+    height: 40px;
+    padding-right: 20px;
+    border: solid #eeeeee 1px;
+}
+#Checkout #content4 .a{
+    margin-left: 955px;
+}
+

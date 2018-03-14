@@ -1,0 +1,49 @@
+#yin_middle{width:100%;height: 900px;}
+#yin_middle_middle{width: 100%;height:680px;background:url("../images/yin_user.png") 730px 0px no-repeat; }
+.yin_middle_middle_li{margin-top: 3%}
+.yin_middle_middle_li1{font-family: Œ¢»Ì—≈∫⁄;font-size: 18px;color: #0f0f0f;margin-left: 10%}
+.yin_middle_middle_li2{font-family: Œ¢»Ì—≈∫⁄;font-size: 18px;color: #122b40;margin-left: 5%}
+
+/*Ã·Ωª∞¥≈•µƒ◊¢ Õ*/
+@-webkit-keyframes greenPulse {
+    from { background-color: #749a02; -webkit-box-shadow: 0 0 9px #333; }
+    50% { background-color: #91bd09; -webkit-box-shadow: 0 0 18px #91bd09; }
+    to { background-color: #749a02; -webkit-box-shadow: 0 0 9px #333; }
+}
+a.green.button {
+    -webkit-animation-name: greenPulse;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+}
+#yin_middle_middle_submit{width: 200px;height: 30px;margin-left: 20%;margin-top: 3%;
+    -webkit-animation-name: greenPulse;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    color: white;
+    font-family: Œ¢»Ì—≈∫⁄;
+    font-size: 16px;
+    /* font-weight: bolder */}
+
+/*π‹¿Ì ’ªıµÿ÷∑*/
+#yin_middle_address{width:100%;height:600px;margin-top:3%;}
+#yin_middle_totel{font-family: Œ¢»Ì—≈∫⁄;font-size: 18px;color: #0f0f0f;margin-left: 10%}
+.yin_middle_middle_li textarea{width: 600px;resize: none;margin-top: 1%;margin-left: 17%;float: left}
+.yin_delete{float: left; margin-left: 20px;color: #c9302c;margin-top: 25px;}
+#yin_middle_newaddress{font-family: Œ¢»Ì—≈∫⁄;font-size: 18px;color: #0f0f0f;width:100%;margin-top: 20px;}
+#yin_middle_newaddress span{font-family: Œ¢»Ì—≈∫⁄;font-size: 18px;color: #0f0f0f;margin-left: 10%;float: left;line-height: 46px}
+#select_p_c_a{float: left}
+#select_street{height: 46px;border: solid 1px #BDBDBD}
+#yin_middle_address_button{height: 36px;width:60pxborder: solid 1px #BDBDBD}
+
+#active2_table{width:1140px; border-collapse:collapse;overflow:hidden;border:2px solid #333333;
+				margin-top:20px}
+#active2_table_tr{white-space: normal}
+td{height:30px; border:#333333 solid 1px; text-align:center;}
+th{height:30px; border:#333333 solid 1px; text-align:center;}
+.active2_table_th1{width:130px}
+.active2_table_th2{width:150px}
+.active2_table_th3{width:110px}
+.active2_table_th4{width:110px}
+.active2_table_th5{width:410px}
+.active2_table_th6{width:130px}
+

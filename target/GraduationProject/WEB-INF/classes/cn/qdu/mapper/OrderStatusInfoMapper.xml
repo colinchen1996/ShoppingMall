@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qdu.dao.OrderStatusInfoDao">
+  <resultMap id="BaseResultMap" type="cn.qdu.entity.OrderStatusInfo">
+    <id column="orderStatusId" jdbcType="INTEGER" property="orderStatusId" />
+    <result column="orderStatus" jdbcType="VARCHAR" property="orderStatus" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    orderStatusId, orderStatus
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from orderstatusinfo
+    where orderStatusId = #{orderStatusId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from orderstatusinfo
+    where orderStatusId = #{orderStatusId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.qdu.entity.OrderStatusInfo">
+    insert into orderstatusinfo (orderStatusId, orderStatus)
+    values (#{orderStatusId,jdbcType=INTEGER}, #{orderStatus,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.qdu.entity.OrderStatusInfo">
+    insert into orderstatusinfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderStatusId != null">
+        orderStatusId,
+      </if>
+      <if test="orderStatus != null">
+        orderStatus,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderStatusId != null">
+        #{orderStatusId,jdbcType=INTEGER},
+      </if>
+      <if test="orderStatus != null">
+        #{orderStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.qdu.entity.OrderStatusInfo">
+    update orderstatusinfo
+    <set>
+      <if test="orderStatus != null">
+        orderStatus = #{orderStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where orderStatusId = #{orderStatusId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.qdu.entity.OrderStatusInfo">
+    update orderstatusinfo
+    set orderStatus = #{orderStatus,jdbcType=VARCHAR}
+    where orderStatusId = #{orderStatusId,jdbcType=INTEGER}
+  </update>
+</mapper>

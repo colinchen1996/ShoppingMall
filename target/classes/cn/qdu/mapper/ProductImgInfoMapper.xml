@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qdu.dao.ProductImgInfoDao">
+  <resultMap id="BaseResultMap" type="cn.qdu.entity.ProductImgInfo">
+    <result column="productId" jdbcType="INTEGER" property="productId" />
+    <result column="productImg" jdbcType="VARCHAR" property="productImg" />
+  </resultMap>
+  <insert id="insert" parameterType="cn.qdu.entity.ProductImgInfo">
+    insert into productimginfo (productId, productImg)
+    values (#{productId,jdbcType=INTEGER}, #{productImg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.qdu.entity.ProductImgInfo">
+    insert into productimginfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        productId,
+      </if>
+      <if test="productImg != null">
+        productImg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="productImg != null">
+        #{productImg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qdu.dao.CartInfoDao">
+  <resultMap id="BaseResultMap" type="cn.qdu.entity.CartInfo">
+    <id column="cartId" jdbcType="INTEGER" property="cartId" />
+    <result column="productName" jdbcType="VARCHAR" property="productName" />
+    <result column="productImg" jdbcType="VARCHAR" property="productImg" />
+    <result column="userId" jdbcType="INTEGER" property="userId" />
+    <result column="productQuantity" jdbcType="VARCHAR" property="productQuantity" />
+    <result column="productPrice" jdbcType="DECIMAL" property="productPrice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    cartId, productName, productImg, userId, productQuantity, productPrice
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cartinfo
+    where cartId = #{cartId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cartinfo
+    where cartId = #{cartId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.qdu.entity.CartInfo">
+    insert into cartinfo (cartId, productName, productImg, 
+      userId, productQuantity, productPrice
+      )
+    values (#{cartId,jdbcType=INTEGER}, #{productName,jdbcType=VARCHAR}, #{productImg,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=INTEGER}, #{productQuantity,jdbcType=VARCHAR}, #{productPrice,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.qdu.entity.CartInfo">
+    insert into cartinfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cartId != null">
+        cartId,
+      </if>
+      <if test="productName != null">
+        productName,
+      </if>
+      <if test="productImg != null">
+        productImg,
+      </if>
+      <if test="userId != null">
+        userId,
+      </if>
+      <if test="productQuantity != null">
+        productQuantity,
+      </if>
+      <if test="productPrice != null">
+        productPrice,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cartId != null">
+        #{cartId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImg != null">
+        #{productImg,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="productQuantity != null">
+        #{productQuantity,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null">
+        #{productPrice,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.qdu.entity.CartInfo">
+    update cartinfo
+    <set>
+      <if test="productName != null">
+        productName = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImg != null">
+        productImg = #{productImg,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        userId = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="productQuantity != null">
+        productQuantity = #{productQuantity,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null">
+        productPrice = #{productPrice,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where cartId = #{cartId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.qdu.entity.CartInfo">
+    update cartinfo
+    set productName = #{productName,jdbcType=VARCHAR},
+      productImg = #{productImg,jdbcType=VARCHAR},
+      userId = #{userId,jdbcType=INTEGER},
+      productQuantity = #{productQuantity,jdbcType=VARCHAR},
+      productPrice = #{productPrice,jdbcType=DECIMAL}
+    where cartId = #{cartId,jdbcType=INTEGER}
+  </update>
+</mapper>
