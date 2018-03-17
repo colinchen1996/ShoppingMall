@@ -58,7 +58,7 @@ public class ManagementController {
 		int count = managementServiceImpl.selectProductCount();
 		int pageSize=5;
 		List<ProductInfo> list =  managementServiceImpl.selectProductByPage(currPage,pageSize);
-		Map<String,Object> map = new HashMap<String, Object>();
+		Map<String,Object> map = new HashMap();
 		map.put("p", count);
 		map.put("l", list);
 		return map;
