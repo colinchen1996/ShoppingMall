@@ -22,6 +22,14 @@
       <version>4.1.6.RELEASE</version>
     </dependency>
 
+    <!--controller中使用HttpSession-->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- mybatis - spring -->
     <dependency>
       <groupId>org.mybatis</groupId>

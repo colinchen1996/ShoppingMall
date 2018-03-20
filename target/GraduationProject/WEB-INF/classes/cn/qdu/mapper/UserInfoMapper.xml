@@ -19,8 +19,11 @@
     <include refid="Base_Column_List" />
     from userinfo
   </select>
-  
-  
+
+  <select id="findByNameAndPassword" parameterType="cn.qdu.entity.UserInfo" resultMap="UserInfoResultMap">
+    select * from userinfo where userName=#{userName} and userPass=#{userPass}
+  </select>
+
   
   
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="UserInfoResultMap">

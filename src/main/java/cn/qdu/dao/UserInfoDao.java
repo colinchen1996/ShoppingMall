@@ -17,8 +17,8 @@ public interface UserInfoDao {
     int updateByPrimaryKeySelective(UserInfo record);
 
     int updateByPrimaryKey(UserInfo record);
-    
+
     List<UserInfo> selectAllUser();
-    
-    
+
+    UserInfo findByNameAndPassword(UserInfo userInfo);
 }
