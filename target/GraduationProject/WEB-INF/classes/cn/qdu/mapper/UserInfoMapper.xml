@@ -24,8 +24,27 @@
     select * from userinfo where userName=#{userName} and userPass=#{userPass}
   </select>
 
-  
-  
+  <select id="selectByUserName" parameterType="string" resultType="cn.qdu.entity.UserInfo">
+    SELECT * from userinfo where userName = #{userName}
+  </select>
+  <select id="selectByUserNameOrEmailOrPhoneNumber" parameterType="cn.qdu.entity.UserInfo" resultType="cn.qdu.entity.UserInfo">
+    select * from userinfo
+    <where>
+      <if test="userName != null and userName != '' ">
+        or userName=#{userName}
+      </if>
+      <if test="email != null and email != '' ">
+        or email=#{email}
+      </if>
+      <if test="phoneNumber != null and phoneNumber != '' ">
+        or phoneNumber=#{phoneNumber}
+      </if>
+    </where>
+  </select>
+  <select id="selectUserIdByUserName" parameterType="string" resultType="int">
+    SELECT u.userId FROM userinfo u where u.userName = #{userName}
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="UserInfoResultMap">
     select 
     <include refid="Base_Column_List" />

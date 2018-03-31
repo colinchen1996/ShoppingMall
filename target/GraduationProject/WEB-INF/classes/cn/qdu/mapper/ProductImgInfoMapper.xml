@@ -5,6 +5,11 @@
     <result column="productId" jdbcType="INTEGER" property="productId" />
     <result column="productImg" jdbcType="VARCHAR" property="productImg" />
   </resultMap>
+
+  <select id="selectByProductId" parameterType="int" resultType="cn.qdu.entity.ProductImgInfo">
+    select * from productimginfo where productId = #{productId}
+  </select>
+
   <insert id="insert" parameterType="cn.qdu.entity.ProductImgInfo">
     insert into productimginfo (productId, productImg)
     values (#{productId,jdbcType=INTEGER}, #{productImg,jdbcType=VARCHAR})

@@ -12,6 +12,15 @@
   <sql id="Base_Column_List">
     addressId, userId, province, city, area, street
   </sql>
+
+  <select id="selectByUserId" parameterType="java.lang.Integer" resultType="cn.qdu.entity.AddressInfo">
+    SELECT * from addressinfo where userId=#{userId}
+  </select>
+
+  <select id="selectByAddressId"  parameterType="int" resultType="cn.qdu.entity.AddressInfo">
+    SELECT * from addressinfo WHERE addressId = #{addressId}
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

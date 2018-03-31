@@ -21,7 +21,9 @@
     <result column="productType" jdbcType="VARCHAR" property="productType" />
   </resultMap>
   
-  
+  <select id="selectByOrderId" parameterType="int" resultType="cn.qdu.entity.OrderItem">
+    SELECT * from orderItem where orderId = #{orderId}
+  </select>
   
   <insert id="insert" parameterType="cn.qdu.entity.OrderItem">
     insert into orderitem (orderId, productId, productCount

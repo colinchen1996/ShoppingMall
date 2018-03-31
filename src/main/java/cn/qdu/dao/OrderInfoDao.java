@@ -19,4 +19,6 @@ public interface OrderInfoDao {
     int updateByPrimaryKey(OrderInfo record);
     
     List<OrderInfo> selectOrders();
+
+    List<OrderInfo> selectByUserId(Integer userId);
 }

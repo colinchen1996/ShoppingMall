@@ -32,6 +32,13 @@
 		<result column="defaultImg" jdbcType="VARCHAR" property="defaultImg" />
 	</resultMap>
 
+
+	<select id="selectByUserId" parameterType="int" resultType="cn.qdu.entity.OrderInfo">
+		SELECT * from orderinfo where userId = #{userId}
+	</select>
+
+
+
 	<select id="selectOrders" resultMap="OrderInfoResultMap">
 		select a.productName,a.defaultImg,b.orderId,b.orderDate,b.orderPrice,b.orderStatus,b.area,b.city,b.province,b.street,b.phoneNumber,b.userName from (select
 		oii.orderId,oii.productCount,pi.*  from orderitem oii,productinfo pi

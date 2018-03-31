@@ -27,4 +27,12 @@ public interface ProductInfoDao {
     int updateInventory(int productId, int productInventory);//更新商品库存
     
     int updatePrice(int productId, float productPrice);//更新商品价格
+
+    List<ProductInfo> selectProductByTypeId(Integer productTypeId);
+
+    List<ProductInfo> selectByOrderId(Integer orderId);
+
+    List<ProductInfo> selectRecommendProduct();
+
+    List<ProductInfo> selectSameTypeProduct(int productId);
 }

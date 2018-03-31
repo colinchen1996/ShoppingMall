@@ -24,11 +24,9 @@
 
             createCode();
 
-
             $("#chance").click(function () {
                 createCode();
             });
-
 
             $("#input-name").blur(function () {
                 $("#error").html("");
@@ -38,7 +36,6 @@
             $("#input-password").blur(function () {
                 $("#error").html("");
             });
-
 
             $("#input").blur(function () {
                 var inputCode = $("#input").val().toUpperCase(); //取得输入的验证码并转化为大写

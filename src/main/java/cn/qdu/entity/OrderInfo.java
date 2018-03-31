@@ -1,8 +1,8 @@
 package cn.qdu.entity;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 public class OrderInfo {
     private Integer orderId;
@@ -14,9 +14,11 @@ public class OrderInfo {
    // private Integer orderStatusId;
     @Autowired
     private OrderStatusInfo orderStatusInfo;
+
     //private Integer userId;
     @Autowired
     private UserInfo userInfo;
+
     //private Integer addressId;
     @Autowired
     private AddressInfo addressInfo;
