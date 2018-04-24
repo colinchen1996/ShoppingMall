@@ -180,8 +180,8 @@
                 <div id="yin_middle_middle">
                     <div>
                         <%
-                            UserInfo newUserInfo = (UserInfo)request.getSession().getAttribute("newUserInfo");
-                            name = newUserInfo.getUserName();
+                            UserInfo userInfo = (UserInfo)session.getAttribute("userInfo");
+                            name = userInfo.getUserName();
                         %>
                     </div>
                     <!-- 这里是个人信息 -->
@@ -191,20 +191,20 @@
                                     class="yin_middle_middle_li1">姓名：</span> <input type="text"
                                                                                     id="yin_name" name="name"
                                                                                     class="yin_middle_middle_li2"
-                                                                                    value="<%out.print(users.get(0).getUserName());%>"
+                                                                                    value="<%out.print(userInfo.getUserName());%>"
                                                                                     readonly style="border: 0px"></li>
                             <li class="yin_middle_middle_li"><span class="yin_middle_middle_li1">邮箱：</span><input
                                     type="text"
 
                                     id="yin_email" name="email" class="yin_middle_middle_li2"
-                                    value="<%out.print(users.get(0).getEmail());%>"></li>
+                                    value="<%out.print(userInfo.getEmail());%>"></li>
                             <li class="yin_middle_middle_li">
                                 <spam
                                         class="yin_middle_middle_li1">电话：
                                 </spam>
                                 <input type="text"
                                        id="yin_tel" name="phoneNumeber" class="yin_middle_middle_li2"
-                                       value="<%out.print(users.get(0).getPhoneNumber());%>"></li>
+                                       value="<%out.print(userInfo.getPhoneNumber());%>"></li>
                             <input type="submit" class="yin_middle_middle_li1" id="yin_middle_middle_submit"
                                    value="确认更改个人信息">
                         </ul>

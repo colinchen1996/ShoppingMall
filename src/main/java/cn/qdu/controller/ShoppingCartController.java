@@ -66,7 +66,7 @@ public class ShoppingCartController {
                 //response.getWriter().print(totlecount);
                 return totalcount;
             }
-        }else{
+        } else {
             return 0;
         }
         //request.getSession().setAttribute("productMap", productMap);
@@ -81,16 +81,19 @@ public class ShoppingCartController {
     @RequestMapping("/countCart")
     public void countCart(HttpServletResponse response, HttpServletRequest request) {
         Map productMap = (HashMap) request.getSession().getAttribute("productMap");
+
         List<ProductInfo> list = new ArrayList<ProductInfo>();
         List countlist = new ArrayList();
-        Iterator iter = productMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            int productId = (Integer) entry.getKey();
-            int count = (Integer) entry.getValue();
-            countlist.add(count);
-            ProductInfo productInfo = cartService.getProductById(productId);
-            list.add(productInfo);
+        if (productMap != null) {
+            Iterator iter = productMap.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                int productId = (Integer) entry.getKey();
+                int count = (Integer) entry.getValue();
+                countlist.add(count);
+                ProductInfo productInfo = cartService.getProductById(productId);
+                list.add(productInfo);
+            }
         }
         request.setAttribute("list", list);
         request.setAttribute("countlist", countlist);
@@ -101,6 +104,7 @@ public class ShoppingCartController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @RequestMapping("/deleteCart")

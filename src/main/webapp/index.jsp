@@ -112,8 +112,8 @@
               String name =(String)session.getAttribute("name");
             %>
             $("#yinuserInfo").click(function () {
-                $.post("getUserInfo", {"name": $('#user').text()}, function () {
-                    window.location.href = "userInfo.jsp";
+                $.post("/getUserInfo", {"name": $('#user').text()}, function () {
+                    //window.location.href = "userInfo.jsp";
                 }, "text");
             })
         })

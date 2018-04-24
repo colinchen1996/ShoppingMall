@@ -26,9 +26,9 @@
     select count(*) from productypeinfo
     where productTypeId=#{productTypeId,jdbcType=INTEGER} or productType=#{productType,jdbcType=VARCHAR}
   </select>
-  <select id="selectProductTypeIdByType" resultType="java.lang.Integer">
+  <select id="selectProductTypeIdByType" resultType="java.lang.Integer" parameterType="java.lang.String">
     select productTypeId from productypeinfo
-    where productType=#{productType,jdbcType=VARCHAR}
+    where productType = #{productType,jdbcType=VARCHAR}
   </select>
   
   

@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,17 +56,16 @@ public class UserInfoController {
     }
 
     @RequestMapping("/getUserInfo")
-    public void getUserInfo(HttpServletResponse response, HttpServletRequest request){
+    public void getUserInfo(HttpServletResponse response, HttpServletRequest request, HttpSession session){
         //request.setCharacterEncoding("utf-8");
         String userName = request.getParameter("name");
-        //String userName = request.getParameter("name");
-        String email = request.getParameter("email");
-        String phoneNumeber = request.getParameter("phoneNumeber");
-        String address = request.getParameter("address");
-        UserInfo user = new UserInfo();
-        user.setUserName(userName);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumeber);
+        //String email = request.getParameter("email");
+        //String phoneNumeber = request.getParameter("phoneNumeber");
+        //String address = request.getParameter("address");
+        //UserInfo user = new UserInfo();
+        //user.setUserName(userName);
+        //user.setEmail(email);
+        //user.setPhoneNumber(phoneNumeber);
         List<Object> list1 = new ArrayList<Object>() ;
         List<Object> list2 = new ArrayList<Object>();
         List<Object> list3 = new ArrayList<Object>();
@@ -88,24 +89,34 @@ public class UserInfoController {
 //            List<Address> addresslist1 = new AddressDaoImpl().selectAddress("SELECT * from addressinfo WHERE addressId= ?", param2);
             List<OrderItem> orderItemList = orderItemDao.selectByOrderId(orderList.get(i).getOrderId());
             List<ProductInfo> productList = productInfoDao.selectByOrderId(orderList.get(i).getOrderId());
-            List<AddressInfo> addresslist1 = addressInfoDao.selectByAddressId(orderList.get(i).getAddressInfo().getAddressId());
+            List<AddressInfo> addresslist1 = new ArrayList<AddressInfo>();
+            if(orderList.get(i).getAddressInfo() != null){
+                addresslist1 = addressInfoDao.selectByAddressId(orderList.get(i).getAddressInfo().getAddressId());
+            }
             list1.add(addresslist1);
             list2.add(productList);
             list3.add(orderItemList);
         }
-        request.getSession().setAttribute("list", userInfo);
-        request.getSession().setAttribute("addresslist", addressList);
-        request.getSession().setAttribute("orderList", orderList);
-        request.getSession().setAttribute("list1", list1);
-        request.getSession().setAttribute("list2",list2);
-        request.getSession().setAttribute("list3",list3);
+//        request.getSession().setAttribute("userInfo", userInfo);
+//        request.getSession().setAttribute("addresslist", addressList);
+//        request.getSession().setAttribute("orderList", orderList);
+//        request.getSession().setAttribute("list1", list1);
+//        request.getSession().setAttribute("list2",list2);
+//        request.getSession().setAttribute("list3",list3);
 
-        // request.getRequestDispatcher("userInfo.jsp").forward(request, response);
+        session.setAttribute("userInfo", userInfo);
+        session.setAttribute("addresslist", addressList);
+        session.setAttribute("orderList", orderList);
+        session.setAttribute("list1", list1);
+        session.setAttribute("list2",list2);
+        session.setAttribute("list3",list3);
+            //request.getRequestDispatcher("userInfo.jsp").forward(request, response);
         try {
             response.sendRedirect("userInfo.jsp");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //return "userInfo";
         //response.getWriter().print(1);
     }
 

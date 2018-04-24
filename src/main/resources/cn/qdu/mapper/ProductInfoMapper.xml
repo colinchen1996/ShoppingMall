@@ -20,13 +20,13 @@
   </sql>
 
   <select id="selectProductByTypeId" parameterType="java.lang.Integer" resultType="cn.qdu.entity.ProductInfo" >
-    select p.* from productinfo p where p.productTypeId=#{productTypeId}
+    select p.* from productinfo p where p.productTypeId = #{productTypeId}
   </select>
   <select id="selectByOrderId" parameterType="int" resultType="cn.qdu.entity.ProductInfo">
-    SELECT p.* from productinfo p,orderitem o where o.productId = p.productId and o.orderId =?
+    SELECT p.* from productinfo p,orderitem o where o.productId = p.productId and o.orderId = #{orderId}
   </select>
-  <select id="selectRecommendProduct" parameterType="cn.qdu.entity.ProductInfo">
-    select * from productinfo ORDER BY  RAND() LIMIT 8
+  <select id="selectRecommendProduct" resultType="cn.qdu.entity.ProductInfo">
+    select * from productinfo ORDER BY  RAND() LIMIT 4
   </select>
   <select id="selectSameTypeProduct" parameterType="int" resultType="cn.qdu.entity.ProductInfo">
     select * from productinfo where productTypeId = (select productTypeId from productinfo where productId = #{productId})

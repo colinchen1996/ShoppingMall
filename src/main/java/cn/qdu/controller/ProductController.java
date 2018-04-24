@@ -27,7 +27,7 @@ public class ProductController {
 
     @ResponseBody
     @RequestMapping("/getRecommendProduct")
-    public List<ProductInfo> getRecommendProduct(HttpServletResponse response){
+    public List<ProductInfo> getRecommendProduct(HttpServletResponse response) {
         //ProductDaoImpl productDapInmpl = new ProductDaoImpl();
         //List<Product> allList = productDapInmpl.selectAll();
         //request.setAttribute("allList", allList);
@@ -39,7 +39,7 @@ public class ProductController {
     }
 
     @RequestMapping("/getFresh")
-    public void getFresh(HttpServletResponse response, HttpServletRequest request){
+    public void getFresh(HttpServletResponse response, HttpServletRequest request) {
         //ProductDaoImpl productDapInmpl = new ProductDaoImpl();
         //List<ProductInfo> freshList = productDapInmpl.selectFresh();
         List<ProductInfo> freshList = productInfoDao.selectProductByTypeId(3);
@@ -54,7 +54,7 @@ public class ProductController {
     }
 
     @RequestMapping("/getFruit")
-    public void getFruit(HttpServletResponse response, HttpServletRequest request){
+    public void getFruit(HttpServletResponse response, HttpServletRequest request) {
         //ProductDaoImpl productDapInmpl = new ProductDaoImpl();
         //List<ProductInfo> freshList = productDapInmpl.selectFresh();
         List<ProductInfo> fruitList = productInfoDao.selectProductByTypeId(1);
@@ -69,7 +69,7 @@ public class ProductController {
     }
 
     @RequestMapping("/getVegetables")
-    public void getVegetables(HttpServletResponse response, HttpServletRequest request){
+    public void getVegetables(HttpServletResponse response, HttpServletRequest request) {
         //ProductDaoImpl productDapInmpl = new ProductDaoImpl();
         //List<ProductInfo> freshList = productDapInmpl.selectFresh();
         List<ProductInfo> vegetablesList = productInfoDao.selectProductByTypeId(2);
@@ -84,58 +84,57 @@ public class ProductController {
     }
 
     @RequestMapping("/getProductDetail")
-    public void getProductDetail(HttpServletRequest request, HttpServletResponse response){
+    public void getProductDetail(HttpServletRequest request, HttpServletResponse response) {
         String id = request.getParameter("idd");
-        int id1= (id == null) ? 1 :Integer.parseInt(id);
-        ProductInfo product = new ProductInfo();
-        product.setProductId(id1);
+        int id1 = (id == null) ? 1 : Integer.parseInt(id);
+//        ProductInfo product = new ProductInfo();
+//        product.setProductId(id1);
         //ProductDaoImpl productDapInmpl = new ProductDaoImpl();
         //List<ProductInfo> productsList = productDapInmpl.selectId(product);
         ProductInfo productInfo = productInfoDao.selectByPrimaryKey(id1);
         //List<Product> productsList1 = productDapInmpl.selectType(product);
         List<ProductInfo> productsList1 = productInfoDao.selectSameTypeProduct(id1);
-        ProductImgInfo productImgInfo = new ProductImgInfo();
-        productImgInfo.setProductId(id1);
+//        ProductImgInfo productImgInfo = new ProductImgInfo();
+//        productImgInfo.setProductId(id1);
         //ProductImgInfoDaoImpl productImgInfoDaoImpl = new ProductImgInfoDaoImpl();
         //List<ProductImgInfo> productImgInfoList = productImgInfoDaoImpl.selectImgInfo(productImgInfo);
         List<ProductImgInfo> productImgInfoList = productImgInfoDao.selectByProductId(id1);
 
-        String list0 = "";
+        String listIdCookieValue = "";
+
         //从客户端获取cookie集合，遍历cookie集合
         Cookie[] cookies = request.getCookies();
         if(null != cookies && cookies.length > 0){
             for(Cookie cookie : cookies){
                 if(cookie.getName().equals("ListIdCookie")){
-                    list0 = cookie.getValue();
+                    listIdCookieValue = cookie.getValue();
                 }
             }
         }
         //以逗号进行分隔
-        list0 += id + ",";
+        listIdCookieValue += id + "，";
         //如果cookie中的记录过多，则清零
-        String[] arr = list0.split(",");
-        List<ProductInfo> productsList3=new ArrayList<ProductInfo>();
+        String[] arr = listIdCookieValue.split("，");
+        List<ProductInfo> historyProductsList=new ArrayList<ProductInfo>();
         if(arr != null && arr.length > 0){
             if(arr.length >= 50){
-                list0 = "";
+                listIdCookieValue = "";
             }
-            int id2;
+            //int id2;
             for(String s : arr){
-                id2 = Integer.parseInt(s);
-                productsList3.add(productInfoDao.selectByPrimaryKey(id2));
+                //id2 = Integer.parseInt(s);
+                historyProductsList.add(productInfoDao.selectByPrimaryKey(Integer.parseInt(s)));
 
             }
         }
-
-        Cookie newCookie = new Cookie("ListIdCookie",list0);
+        Cookie newCookie = new Cookie("ListIdCookie",listIdCookieValue);
         //设置cookie的有效期
         newCookie.setMaxAge(24*60*60);
-
         response.addCookie(newCookie);
 
         request.setAttribute("productsList", productInfo);
         request.setAttribute("productsList1", productsList1);
-        request.setAttribute("productsList3", productsList3);
+        request.setAttribute("productsList3", historyProductsList);
         request.setAttribute("productImgInfoList", productImgInfoList);
         try {
             request.getRequestDispatcher("product_detail.jsp").forward(request, response);

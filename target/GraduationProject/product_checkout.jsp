@@ -176,7 +176,7 @@
                     </li>
                     <li class="pull-right">
                         <div class="cart dropdown">
-                            <a href="CartServlet" class="cart-item dropdown-toggle"> <span class="totlecount">0</span><i
+                            <a href="countCart" class="cart-item dropdown-toggle"> <span class="totlecount">0</span><i
                                     class="fa fa-cart-plus"></i>
                             </a>
                         </div>

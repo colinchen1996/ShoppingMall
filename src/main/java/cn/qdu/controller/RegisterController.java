@@ -42,7 +42,7 @@ public class RegisterController {
         if (userInfoDao.selectByUserNameOrEmailOrPhoneNumber(user) != null) {
             p.print("true");
         } else {
-            p.print("flase");
+            p.print("false");
         }
         p.flush();
         p.close();
@@ -52,12 +52,11 @@ public class RegisterController {
     public void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //request.setCharacterEncoding("UTF-8");
         UserInfo user = new UserInfo();
-
         user.setUserName(request.getParameter("name"));
         user.setEmail(request.getParameter("email"));
         user.setPhoneNumber(request.getParameter("phone"));
         user.setUserPass(request.getParameter("password"));
-
+        user.setUserStatus("未锁定");
         int ret = userInfoDao.insert(user);
         //boolean ret = new UserDaoImpl().register(user);
         if (ret > 0) {

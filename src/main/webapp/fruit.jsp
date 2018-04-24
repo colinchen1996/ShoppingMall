@@ -151,10 +151,8 @@
                     <div class="dropdown category-bar">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"
                            role="button" aria-haspopup="true" aria-expanded="true"> <span
-                                class="li_size"> Seven商城 </span>
+                                class="li_size"> 药店商城 </span>
                         </a>
-
-
                     </div>
                 </div>
                 <div class="col-sm-8 col-md-8 col-lg-7 p-0">
@@ -208,22 +206,15 @@
                         <div class="col-sm-6 col-md-4 col-lg-3">
                             <!-- Product item -->
                             <div class="product-item">
-                                <a
-                                        href="Product_detail_Servlet?idd=<%out.print(list.get(i).getProductId());%>">
-                                    <img src="images/<%out.print(list.get(i).getDefaultImg());%>"
-                                         alt="image">
+                                <a href="/getProductDetail?idd=<%out.print(list.get(i).getProductId());%>">
+                                    <img src="images/<%out.print(list.get(i).getDefaultImg());%>" alt="image">
                                 </a>
                                 <div class="product-caption">
                                     <h4 class="product-name">
-                                        <a href="#"><%
-                                            out.print(list.get(i).getProductName());
-                                        %>
-                                        </a>
+                                        <a href="#"><%out.print(list.get(i).getProductName()); %></a>
                                     </h4>
                                     <div class="product-price-group">
-											<span class="product-price"> <%
-                                                out.print("$" + list.get(i).getProductPrice());
-                                            %>
+											<span class="product-price"> <%out.print("$" + list.get(i).getProductPrice());%>
 											</span>
                                     </div>
                                     <div class="ht-btn-group">
@@ -237,41 +228,39 @@
                         <%
                             }
                         %>
-                        <%
-                            for (int i = 0; i < list.size(); i++) {
-                        %>
-                        <div class="col-sm-6 col-md-4 col-lg-3">
-                            <!-- Product item -->
-                            <div class="product-item">
-                                <a
-                                        href="Product_detail_Servlet?idd=<%out.print(list.get(i).getProductId());%>">
-                                    <img src="images/<%out.print(list.get(i).getDefaultImg());%>"
-                                         alt="image">
-                                </a>
-                                <div class="product-caption">
-                                    <h4 class="product-name">
-                                        <a href="#"><%
-                                            out.print(list.get(i).getProductName());
-                                        %>
-                                        </a>
-                                    </h4>
-                                    <div class="product-price-group">
-											<span class="product-price"> <%
-                                                out.print("$" + list.get(i).getProductPrice());
-                                            %>
-											</span>
-                                    </div>
-                                    <div class="ht-btn-group">
-                                        <a href="#" onclick="return false;" class="into">加入购物车</a>
-                                        <div title="<%out.print(list.get(i).getProductId());%>"></div>
-                                        <div title="1"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <%
-                            }
-                        %>
+                        <%--<%--%>
+                            <%--for (int i = 0; i < list.size(); i++) {--%>
+                        <%--%>--%>
+                        <%--<div class="col-sm-6 col-md-4 col-lg-3">--%>
+                            <%--<!-- Product item -->--%>
+                            <%--<div class="product-item">--%>
+                                <%--<a href="Product_detail_Servlet?idd=<%out.print(list.get(i).getProductId());%>">--%>
+                                    <%--<img src="images/<%out.print(list.get(i).getDefaultImg());%>" alt="image">--%>
+                                <%--</a>--%>
+                                <%--<div class="product-caption">--%>
+                                    <%--<h4 class="product-name">--%>
+                                        <%--<a href="#"><%--%>
+                                            <%--out.print(list.get(i).getProductName());--%>
+                                        <%--%>--%>
+                                        <%--</a>--%>
+                                    <%--</h4>--%>
+                                    <%--<div class="product-price-group">--%>
+											<%--<span class="product-price"> <%--%>
+                                                <%--out.print("$" + list.get(i).getProductPrice());--%>
+                                            <%--%>--%>
+											<%--</span>--%>
+                                    <%--</div>--%>
+                                    <%--<div class="ht-btn-group">--%>
+                                        <%--<a href="#" onclick="return false;" class="into">加入购物车</a>--%>
+                                        <%--<div title="<%out.print(list.get(i).getProductId());%>"></div>--%>
+                                        <%--<div title="1"></div>--%>
+                                    <%--</div>--%>
+                                <%--</div>--%>
+                            <%--</div>--%>
+                        <%--</div>--%>
+                        <%--<%--%>
+                            <%--}--%>
+                        <%--%>--%>
 
 
                     </div>

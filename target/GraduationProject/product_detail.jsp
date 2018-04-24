@@ -4,7 +4,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <%
-    List<ProductInfo> list = (List) request.getAttribute("productsList");
+    ProductInfo productInfo = (ProductInfo)request.getAttribute("productsList");
     List<ProductInfo> list1 = (List) request.getAttribute("productsList1");
     List<ProductImgInfo> list2 = (List) request.getAttribute("productImgInfoList");
     List<ProductInfo> list3 = (List) request.getAttribute("productsList3");
@@ -76,7 +76,7 @@
             $(".name41 input:eq(2)").click(function () {            //增加
                 var va2 = $(this).prev().attr("value");
                 if (va2 >= <%
-							out.print(list.get(0).getProductInventory());
+							out.print(productInfo.getProductInventory());
 					%>) {
                     alert("库存不足！")
                 } else {
@@ -242,11 +242,11 @@
                 <ul class="thumbnails p-0">
                     <li><a class="thumbnail img-large image-zoom"
                            href="images/<%
-								out.print(list.get(0).getDefaultImg());
+								out.print(productInfo.getDefaultImg());
 			%>"
                            title="iPhone"> <img
                             src="images/<%
-									out.print(list.get(0).getDefaultImg());
+									out.print(productInfo.getDefaultImg());
 			%>"
                             alt="iPhone">
                     </a></li>
@@ -275,7 +275,7 @@
                 <div class="product-pare m-t-xs-60">
                     <h1>
                         <%
-                            out.print(list.get(0).getProductName());
+                            out.print(productInfo.getProductName());
                         %>
 
                     </h1>
@@ -289,12 +289,12 @@
                     </ul>
                     <button class="btn ht-btn bg-3 m-t-0">
                         库存：<%
-                        out.print(list.get(0).getProductInventory());
+                        out.print(productInfo.getProductInventory());
                     %>
                     </button>
                     <p class="product-price">
                         <%
-                            out.print("$" + list.get(0).getProductPrice());
+                            out.print("$" + productInfo.getProductPrice());
                         %>
                     </p>
 
@@ -307,7 +307,7 @@
                     </div>
 
                     <button type="button" class="btn ht-btn bg-3 m-t-0 into">加入购物车</button>
-                    <div title="<%out.print(list.get(0).getProductId());%>"></div>
+                    <div title="<%out.print(productInfo.getProductId());%>"></div>
 
                     <!--<div class="m-t-30">-->
                     <!--<a href="#">0 reviews</a> / <a href="#">写评论</a>-->
@@ -323,9 +323,7 @@
                     <h2 class="title">商品描述</h2>
                     <h6>
                         <%
-                            for (ProductInfo product : list) {
-                                out.print(product.getProductDetail());
-                            }
+                                out.print(productInfo.getProductDetail());
                         %>
                     </h6>
                     <h5>营养成分</h5>
