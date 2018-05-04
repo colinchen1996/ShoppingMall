@@ -46,20 +46,17 @@
 
     <script>
         $(function () {
-            var totlecount = 0;
+            $.post("/getCartCount",
+                function (msg) {
+                    $('.totalCount').html(msg);
+                }, "text");
 
-            $.post("addCart", {"action": "totalcount"}, function (msg) {
-                totlecount = totlecount + parseInt(msg);
-                $('.totlecount').html(totlecount);
-            }, "text");
-
-            $.post("getRecommendProduct", {a: "s"}, function (msg) {
+            $.post("/getRecommendProduct", {a: "s"}, function (msg) {
                 $.each(msg, function (i, list) {   //循环下部分商品推荐
-
                     $("#ca_1").append(			//循环输出首页中部商品推荐内容
                         "<div class='col-sm-6 col-md-4 col-lg-3'>"
                         + "<div class='product-item'>"
-                        + "<a href='Product_detail_Servlet?idd=" + list.productId + "'>"
+                        + "<a href='/getProductDetail?idd=" + list.productId + "'>"
                         + "<img src='images/" + list.defaultImg + "' alt='image'>"
                         + "</a><div class='product-caption'>"
                         + "<h4 class='product-name'>"
@@ -70,41 +67,28 @@
                         + "<div class='ht-btn-group' >"
                         + "<a href='#' onclick='return false;' class='into'>加入购物车</a>"
                         + "<div title='" + list.productId + "'></div>"
-                        + "<div title='1'></div>"
                         + "</a></div></div></div></div>"
                     );
 
                 });
 
                 $('.into').click(function () {  //加入购物车
-                    alert("添加成功")
-                    $.post("addCart", {
+                    alert("添加成功!");
+                    $.post("/addCart",
+                        {
                             "productId": $(this).next().prop("title"),
-                            "count": $(this).next().next().prop("title"), "action": "add"
+                            "count": 1
                         }
                         , function (msg) {
-                            totlecount = totlecount + parseInt(msg);
-                            $('.totlecount').html(totlecount);
+                            $('.totalCount').html(msg);
                         }, "text");
                 })
-
             }, "json");
 
-            $("#logout").click(function () {       //注销
-                $.ajax({
-                    url: "logOut",
-                    type: "post",
-                    data: {},
-                    dataType: "",
-                    success: function (result) {
-                        if (result == "true")
-                            $("#user").html("");
-                        else
-                            $("#user").html("");
-                    },
-                    error: function () {
-                    }
-                });
+            $("#logout").click(function () {//注销
+                alert("注销成功!");
+                $("#user").html("");
+                $.get("/logout");
             });
 
             <%
@@ -112,15 +96,16 @@
               String name =(String)session.getAttribute("name");
             %>
             $("#yinuserInfo").click(function () {
-                $.post("/getUserInfo", {"name": $('#user').text()}, function () {
-                    //window.location.href = "userInfo.jsp";
-                }, "text");
-            })
+                var userName = $('#user').text();
+                if (userName != null) {
+                    window.location.href = "/getUserInfo";
+                }
+            });
         })
     </script>
 </head>
-<body class="bg-m">
 
+<body class="bg-m">
 <div class="preloader">
     <i class="fa fa-spinner"></i>
 </div>
@@ -136,17 +121,19 @@
                     <!--<li class="hidden-xs"><a href="">收藏夹</a></li>-->
                     <!--<li class="hidden-xs"><a href="#">分类</a></li>-->
 
-                    <li class="hidden-xs" id="yinuserInfo"><a id="user"><%
-                        if (name == null)
-                            out.print("");
-                        else {
-                            out.print(name);
-                        }
-                    %></a></li>
-                    <li class="dropdown hidden-xs"><a href="#"
-                                                      class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
-                                                      aria-haspopup="true" aria-expanded="false">我的账户 <span
-                            class="caret"></span></a>
+                    <li class="hidden-xs" id="yinuserInfo">
+                        <a id="user"><%
+                            if (name == null)
+                                out.print("");
+                            else {
+                                out.print(name);
+                            }
+                        %></a>
+                    </li>
+                    <li class="dropdown hidden-xs">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
+                           aria-haspopup="true" aria-expanded="false">我的账户 <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a href="login.jsp">登录</a></li>
                             <li><a href="register.jsp">注册</a></li>
@@ -155,7 +142,7 @@
                     </li>
                     <li class="pull-right">
                         <div class="cart dropdown">
-                            <a href="countCart" class="cart-item dropdown-toggle"> <span class="totlecount">0</span>
+                            <a href="/countCart" class="cart-item dropdown-toggle"> <span class="totalCount">0</span>
                                 <i class="fa fa-cart-plus"></i>
                             </a>
                         </div>
@@ -170,10 +157,9 @@
                 <div class="col-sm-1 col-md-1 col-lg-2 p-0">
                     <div class="dropdown category-bar">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                           role="button" aria-haspopup="true" aria-expanded="true"><!--  <i
-							class="fa fa-bars"> --></i><span class="li_size"> Seven商城 </span>
+                           role="button" aria-haspopup="true" aria-expanded="true">
+                            <!--  <i class="fa fa-bars"></i>--><span class="li_size"> 药店商城 </span>
                         </a>
-
                     </div>
                 </div>
                 <div class="col-sm-8 col-md-8 col-lg-7 p-0">
@@ -192,9 +178,9 @@
                                  id="bs-example-navbar-collapse-1">
                                 <ul class="nav navbar-nav li_size">
                                     <li><a href="index.jsp">主页</a></li>
-                                    <li><a href="/getFruit">鲜果</a></li>
-                                    <li><a href="/getFresh">生鲜</a></li>
-                                    <li><a href="/getVegetables">蔬菜</a></li>
+                                    <li><a href="/getProducts?productTypeId=1">中药</a></li>
+                                    <li><a href="/getProducts?productTypeId=2">西药</a></li>
+                                    <li><a href="/getProducts?productTypeId=3">儿童药品</a></li>
                                     <li><a href="about.jsp">商城简介</a></li>
                                 </ul>
                             </div>
@@ -221,25 +207,21 @@
                  data-autoplay="true" data-pag="false" data-buttons="false">
                 <div class="col-sm-8 col-md-9 pull-right">
                     <div class="slider-item">
-                        <img src="images/bg-13.png" alt="image">
+                        <img src="images/bg-12.png" alt="image">
                         <div class="slider-caption">
                             <h3 class="heading-size-3">100% 纯天然</h3>
-                            <h2 class="heading-size-1">
-                                鲜果
-                                </h1>
-                                <h4 class="heading-size-5">精选全球各直供产地优质果源</h4>
+                            <h2 class="heading-size-1">中药</h2>
+                            <h4 class="heading-size-5">药材品种齐全，物美价廉</h4>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-8 col-md-9 pull-right">
                     <div class="slider-item">
-                        <img src="images/bg-12.png" alt="image">
+                        <img src="images/bg-13.png" alt="image">
                         <div class="slider-caption">
-                            <h3 class="heading-size-3">我们自供应农场</h3>
-                            <h2 class="heading-size-1">
-                                蔬菜
-                                </h1>
-                                <h4 class="heading-size-5">提供人体所必需的多种维生素</h4>
+                            <h3 class="heading-size-3">严格质检</h3>
+                            <h2 class="heading-size-1">西药</h2>
+                            <h4 class="heading-size-5">保障药品安全、有效、均一、稳定</h4>
                         </div>
                     </div>
                 </div>
@@ -247,9 +229,9 @@
                     <div class="slider-item">
                         <img src="images/bg-21.png" alt="image">
                         <div class="slider-caption">
-                            <h3 class="heading-size-3">全球直采</h3>
-                            <h1 class="heading-size-1">生鲜</h1>
-                            <h4 class="heading-size-5">进口专业冷库，安全卫生</h4>
+                            <h3 class="heading-size-3">安全用药</h3>
+                            <h1 class="heading-size-1">儿童药品</h1>
+                            <h4 class="heading-size-5">规范药物使用，降低儿童用药风险</h4>
                         </div>
                     </div>
                 </div>
@@ -263,27 +245,27 @@
             <div class="col-sm-4 m-b-30 p-0">
                 <div class="banner bg-img-8 bg-2">
                     <div class="caption">
-                        <h2 class="heading-size-4">蔬菜</h2>
-                        <h3 class="heading-size-6 f-normal">有机 天然</h3>
-                        <a href="Vegetables_Servlet" class="btn ht-btn ht-btn-bg-2">商品详情</a>
+                        <h2 class="heading-size-4">中药</h2>
+                        <h3 class="heading-size-6 f-normal">有效成分不易散失</h3>
+                        <a href="/getProducts?productTypeId=1" class="btn ht-btn ht-btn-bg-2">商品详情</a>
                     </div>
                 </div>
             </div>
             <div class="col-sm-4 m-b-30 p-0">
                 <div class="banner bg-img-0 bg-6">
                     <div class="caption">
-                        <h2 class="heading-size-4">鲜果</h2>
-                        <h3 class="heading-size-6 f-normal">美容 养颜</h3>
-                        <a href="Fruit_Servlet" class="btn ht-btn ht-btn-bg-2">商品详情</a>
+                        <h2 class="heading-size-4">西药</h2>
+                        <h3 class="heading-size-6 f-normal">短期内效果明显</h3>
+                        <a href="/getProducts?productTypeId=2" class="btn ht-btn ht-btn-bg-2">商品详情</a>
                     </div>
                 </div>
             </div>
             <div class="col-sm-4 p-0">
                 <div class="banner bg-img-7 bg-3">
                     <div class="caption">
-                        <h2 class="heading-size-4">生鲜</h2>
-                        <h3 class="heading-size-6 f-normal">营养 丰富</h3>
-                        <a href="Fresh_Servlet" class="btn ht-btn ht-btn-bg-2">商品详情</a>
+                        <h2 class="heading-size-4">儿童药品</h2>
+                        <h3 class="heading-size-6 f-normal">降低儿童用药风险</h3>
+                        <a href="/getProducts?productTypeId=3" class="btn ht-btn ht-btn-bg-2">商品详情</a>
                     </div>
                 </div>
             </div>
@@ -293,27 +275,33 @@
 <!-- Product tabs -->
 <div>
     <div class="container text-center m-t-30">
-
-
         <div class="ht-tabs ht-tabs-product text-center">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs m-b-20" role="tablist">
-                <li role="presentation"><a><p>
-                    <img src="images/25.jpg" alt="image">
-                </p>
-                    <h3 class="title f-30">商</h3></a></li>
-                <li role="presentation"><a><p>
-                    <img src="images/17.jpg" alt="image">
-                </p>
-                    <h3 class="title f-30">品</h3></a></li>
-                <li role="presentation"><a><p>
-                    <img src="images/6.jpg" alt="image">
-                </p>
-                    <h3 class="title f-30">推</h3></a></li>
-                <li role="presentation"><a><p>
-                    <img src="images/9.jpg" alt="image">
-                </p>
-                    <h3 class="title f-30">荐</h3></a></li>
+                <li role="presentation">
+                    <a>
+                        <p><img src="images/bg-7.png" alt="image"></p>
+                        <h3 class="title f-30">商</h3>
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a>
+                        <p><img src="images/bg-8.png" alt="image"></p>
+                        <h3 class="title f-30">品</h3>
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a>
+                        <p><img src="images/bg-9.png" alt="image"></p>
+                        <h3 class="title f-30">推</h3>
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a>
+                        <p><img src="images/bg-10.png" alt="image"></p>
+                        <h3 class="title f-30">荐</h3>
+                    </a>
+                </li>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
@@ -417,20 +405,22 @@
                              data-singleItem="true" data-autoplay="true" data-pag="true"
                              data-buttons="false">
                             <div class="testimonial-item">
-                                <span><img src="images/1.jpg" alt="image"></span>
-                                <p>蔬菜是人们日常饮食中必不可少的食物之一，是一
-                                    种绿色食品。蔬菜可提供人体所必需的多种维生素和矿物质等营养物质。据国际物质粮农组织1990年统计，人体必需的VC的90%、VA的60%来自蔬菜。</p>
-                                <strong>蔬菜</strong>
+                                <span><img src="images/黄芪.jpg" alt="image"></span>
+                                <p>
+                                    根圆柱形，有的有分枝，上端较粗，略扭曲，长30～90cm，直径0.7～3.5cm。表面淡棕黄色至淡棕褐色，有不规则纵皱纹及横长皮孔，栓皮易剥落而露出黄白色皮部，有的可见网状纤维束。质坚韧，断面强纤维性。气微，味微甜，有豆腥味。</p>
+                                <strong>黄芪</strong>
                             </div>
                             <div class="testimonial-item">
-                                <span><img src="images/2.jpg" alt="image"></span>
-                                <p>果能美容养颜 水果所含的维生素C和果胶可以使人美白、消除人体黑斑和雀斑，还有滋润肌肤、除皱养颜的功效</p>
-                                <strong>鲜果</strong>
+                                <span><img src="images/铁皮石斛.jpg" alt="image"></span>
+                                <p>
+                                    铁皮石斛又名黑节草，属气生兰科草本植物。石斛可分为黄草、金钗、马鞭等数十种，铁皮石斛为石斛之极品，它因表皮呈铁绿色而得名。铁皮石斛具有独特的药用价值，生于树上和岩石上。多加工成枫斗。原产中国安徽大别山、浙东天台山、福建宁化、广西天峨、云南文山以及四川等地，多分布于海拔近千米的山地半阴湿岩石上，一般均能耐－5℃的低温。</p>
+                                <strong>铁皮石斛</strong>
                             </div>
                             <div class="testimonial-item">
-                                <span><img src="images/3.jpg" alt="image"></span>
-                                <p>生鲜营养成分极其丰富，蛋白质是生命的基础。没有蛋白质就没有一切生命。</p>
-                                <strong>生鲜</strong>
+                                <span><img src="images/何首乌.jpg" alt="image"></span>
+                                <p>
+                                    本品呈团块状或不规则纺锤形，长6～15cm，直径4～12cm。表面红棕色或红褐色，皱缩不平，有浅沟，并有横长皮孔及细根痕。体重，质坚实，不易折断，断面浅黄棕色或浅红棕色，显粉性，皮部有4～11个类圆形异型维管束环列，形成云锦状花纹，中央木部较大，有的呈木心。气微，味微苦而甘涩。</p>
+                                <strong>何首乌</strong>
                             </div>
                         </div>
                     </div>
@@ -534,72 +524,69 @@
                         </a>
                         <div class="blog-caption">
                             <ul class="blog-date">
-                                <li><i class="fa fa-clock-o"></i>十一月 04, 2016</li>
-                                <li><a><i class="fa fa-comments-o"></i>3</a></li>
+                                <li><i class="fa fa-clock-o"></i>五月 04, 2018</li>
+                                <li><a><i class="fa fa-comments-o"></i>红参</a></li>
                             </ul>
                             <h3 class="blog-heading">
-                                <a>在容器中种植西红柿、辣椒和茄子</a>
+                                <a>中药的一种，属伞形目、五加科植物</a>
                             </h3>
-                            <p>番茄和辣椒是被种植最多的蔬菜，几乎每个种菜的网友都会尝试这两种蔬菜，所以先介绍茄科作物的种植。</p>
-                            <a
-                                    href="http://www.360doc.com/content/14/0508/17/911173_375865619.shtml"
-                                    class="btn ht-btn ht-btn-1"><i
-                                    class="fa fa-long-arrow-right"></i>读取更多</a>
+                            <p>红参环纹不明显，有枝根痕，根茎上部土黄色，顶端有芦碗，习称“油盏头”。本品特征：质坚，体重且脆，气香，味微苦。</p>
+                            <a href="https://baike.baidu.com/item/%E7%BA%A2%E5%8F%82/5132842?fr=aladdin"
+                               class="btn ht-btn ht-btn-1">
+                                <i class="fa fa-long-arrow-right"></i>读取更多</a>
                         </div>
                     </div>
                 </div>
                 <!--end blog-->
                 <div class="col-sm-12">
                     <div class="blog-item m-b-0">
-                        <a class="blog-img"> <img src="images/banner2.jpg"
-                                                  alt="image">
+                        <a class="blog-img">
+                            <img src="images/banner2.jpg" alt="image">
                         </a>
                         <div class="blog-caption">
                             <ul class="blog-date">
-                                <li><i class="fa fa-clock-o"></i>十一月 04, 2016</li>
-                                <li><a><i class="fa fa-comments-o"></i>3</a></li>
+                                <li><i class="fa fa-clock-o"></i>五月 04, 2018</li>
+                                <li><a><i class="fa fa-comments-o"></i>阿莫西林</a></li>
                             </ul>
                             <h3 class="blog-heading">
-                                <a>蔬菜——花椰菜和花椰菜</a>
+                                <a>抗生素类药，杀菌作用强</a>
                             </h3>
-                            <p>花椰菜，又称花菜、菜花或椰菜花，是一种十字花科蔬菜，为甘蓝的变种。花椰菜的头部为白色花序，与西兰花的头部类似。</p>
-                            <a
-                                    href="https://baike.baidu.com/item/%E8%8F%9C%E8%8A%B1/374405?fr=aladdin"
-                                    class="btn ht-btn ht-btn-1"><i
-                                    class="fa fa-long-arrow-right"></i>读取更多</a>
+                            <p>阿莫西林是目前应用较为广泛的口服青霉素之一，其制剂有胶囊、片剂、颗粒剂、分散片等等。青霉素过敏及青霉素皮肤试验阳性患者禁用。</p>
+                            <a href="https://baike.baidu.com/item/%E9%98%BF%E8%8E%AB%E8%A5%BF%E6%9E%97/113694?fr=aladdin"
+                               class="btn ht-btn ht-btn-1">
+                                <i class="fa fa-long-arrow-right"></i>读取更多</a>
                         </div>
                     </div>
                 </div>
                 <!--end blog-->
                 <div class="col-sm-12">
                     <div class="blog-item m-b-0">
-                        <a class="blog-img"> <img src="images/banner3.jpg"
-                                                  alt="image">
+                        <a class="blog-img">
+                            <img src="images/banner3.jpg" alt="image">
                         </a>
                         <div class="blog-caption">
                             <ul class="blog-date">
-                                <li><i class="fa fa-clock-o"></i>十一月 04, 2016</li>
-                                <li><a><i class="fa fa-comments-o"></i>3</a></li>
+                                <li><i class="fa fa-clock-o"></i>五月 04, 2018</li>
+                                <li><a><i class="fa fa-comments-o"></i>儿童药品</a></li>
                             </ul>
                             <h3 class="blog-heading">
-                                <a>生长杆与矮种豆</a>
+                                <a>指14岁以下未成年人使用的专用药品</a>
                             </h3>
-                            <p>四季豆忌连作。宜选择疏松肥沃、排灌良好、微酸性至中性的土壤。若土壤过酸，应施石灰中和。要求深沟高畦。</p>
-                            <a
-                                    href="https://zhidao.baidu.com/question/1732334956732899187.html"
-                                    class="btn ht-btn ht-btn-1"><i
-                                    class="fa fa-long-arrow-right"></i>读取更多</a>
+                            <p>儿童作为特殊的用药群体，他们有自己独特的生理特点。儿科疾病的药物治疗比成人要复杂得多，应根据不同时期孩子特点和具体病情确定治疗方案。</p>
+                            <a href="https://baike.baidu.com/item/%E5%84%BF%E7%AB%A5%E8%8D%AF%E5%93%81/12778062"
+                               class="btn ht-btn ht-btn-1">
+                                <i class="fa fa-long-arrow-right"></i>读取更多</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12">
+                <%--<div class="col-sm-12">
                     <div class="blog-item m-b-0">
                         <a class="blog-img"> <img src="images/banner4.jpg"
                                                   alt="image">
                         </a>
                         <div class="blog-caption">
                             <ul class="blog-date">
-                                <li><i class="fa fa-clock-o"></i>十一月 04, 2016</li>
+                                <li><i class="fa fa-clock-o"></i>五月 04, 2018</li>
                                 <li><a><i class="fa fa-comments-o"></i>3</a></li>
                             </ul>
                             <h3 class="blog-heading">
@@ -612,7 +599,7 @@
                                     class="fa fa-long-arrow-right"></i>读取更多</a>
                         </div>
                     </div>
-                </div>
+                </div>--%>
             </div>
         </div>
     </div>

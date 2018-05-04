@@ -1,6 +1,7 @@
 <%@page import="cn.qdu.entity.ProductInfo" %>
-<%@page import="java.util.ArrayList" %>
-<%@page import="java.util.List" %>
+<%@page import="java.util.*" %>
+<%@ page import="cn.qdu.entity.UserInfo" %>
+<%@ page import="cn.qdu.entity.AddressInfo" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <!DOCTYPE html>
@@ -33,70 +34,69 @@
     <script type="text/javascript" src="js/jquery/order_jqueryr.js"></script>
     <script src="js/jquery-3.1.0.min.js"></script>
     <%
-        List<ProductInfo> productList = new ArrayList<ProductInfo>();
-        List countList = new ArrayList();
-        if (null != (List) request.getAttribute("countList")) {
-            countList = (List) request.getAttribute("countList");
+        Map<ProductInfo, Integer> productInfoAndCount = new HashMap();
+        if (request.getSession().getAttribute("productInfoAndCount") != null) {
+            productInfoAndCount = (Map<ProductInfo, Integer>) request.getSession().getAttribute("productInfoAndCount");
         }
-        if (null != (List) request.getAttribute("productInfoList")) {
-            productList = (List) request.getAttribute("productInfoList");
-        }
+        UserInfo userInfo = (UserInfo) request.getSession().getAttribute("loginUserInfo");
     %>
     <script>
         $(function () {
+            $.post("/getCartCount",
+                function (msg) {
+                    $('.totalCount').html(msg);
+                }, "text");
 
-            var totlecount = 0;
+            $.get("/getUserAddress");//获得用户的地址
 
-            $.post("addCart", {"action": "totalcount"}, function (msg) {
-                totlecount = totlecount + parseInt(msg);
-                $('.totlecount').html(totlecount);
-            }, "text");
-
-            $("#logout").click(function () {       //注销
-                $.ajax({
-                    url: "logOut",
-                    type: "post",
-                    data: {},
-                    dataType: "",
-                    success: function (result) {
-                        if (result == "true")
-                            $("#user").html("");
-                        else
-                            $("#user").html("");
-                    },
-                    error: function () {
-                    }
-                });
+            $("#logout").click(function () {//注销
+                alert("注销成功!");
+                $("#user").html("");
+                $.get("/logout");
             });
+
             var $clone = $('.add').clone(true);
             $('.add').remove();
-            <%for(int i=0;i<productList.size();i++){%>
-            var $Newclone = $clone.clone(true);
-            var $divs = $Newclone.children();
-            $divs.find('.img').html('<img src="images/<%=productList.get(i).getDefaultImg()%>"  width="40" height="40" />')
-            $divs.find('.name').html('<%=productList.get(i).getProductName()%>')
-            $Newclone.find('.price').html('<%=productList.get(i).getProductPrice()%>')
-            $Newclone.find('.count').html('<%=countList.get(i)%>')
-            var $totle =
-            <%=countList.get(i)%> * <%=productList.get(i).getProductPrice()%>
-            $Newclone.find('.totle').html($totle)
-            $('.d').append($Newclone);
-            <%}%>
+            var totalPrice = 0;
+            <%for(ProductInfo productInfo : productInfoAndCount.keySet()){%>
+            var $row = $clone.clone(true);
+            var $divs = $row.children();
+            $divs.find('.img').html('<img src="images/<%=productInfo.getDefaultImg()%>"  width="40" height="40" />');
+            $divs.find('.name').html('<%=productInfo.getProductName()%>');
+            $row.find('.price').html('<%=productInfo.getProductPrice()%>');
+            $row.find('.count').html('<%=productInfoAndCount.get(productInfo)%>');
+            var count = <%=productInfoAndCount.get(productInfo)%>;
+            var price = <%=productInfo.getProductPrice()%>;
+            var total = count * price;
+            var totalPrice = totalPrice + total;
+            $row.find('.total').html(total);
+            $(".totalPrice").html(totalPrice + '元');
+            $('.d').append($row);
+            <% } %>
 
             $("#yinuserInfo").click(function () {
-                $.post("getUserInfo", {"name": $('#user').text()}, function () {
-                    window.location.href = "userInfo.jsp";
-                }, "text");
-            })
-        })
+                var userName = $('#user').text();
+                if (userName != null) {
+                    window.location.href = "/getUserInfo";
+                }
+            });
 
+            $("#orderSucceed").click(function () {
+                window.location.href = "/orderSucceed?orderPrice=" + totalPrice + "&addressInfo.addressId=" + $("select option:selected").val();
+            });
+
+            $(".use-new-addr").click(function () {
+                $("#yinuserInfo").trigger("click");
+            });
+        })
     </script>
 </head>
+
 <body>
 <%
     request.setCharacterEncoding("UTF-8");
     String name = (String) session.getAttribute("name");
-
+    List<AddressInfo> addressInfoList = (ArrayList<AddressInfo>) request.getSession().getAttribute("addressList");
 %>
 <div class="preloader">
     <i class="fa fa-spinner"></i>
@@ -120,14 +120,14 @@
                         }
                     %></a></li>
 
-                    <li class="hidden-xs"><a id="user" href="#">
-
-
-                    </a></li>
-                    <li class="dropdown hidden-xs"><a href="#"
-                                                      class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
-                                                      aria-haspopup="true" aria-expanded="false">我的账户 <span
-                            class="caret"></span></a>
+                    <li class="hidden-xs">
+                        <%--<a id="user" href="#"></a>--%>
+                    </li>
+                    <li class="dropdown hidden-xs">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
+                           aria-haspopup="true" aria-expanded="false">我的账户
+                            <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a href="login.jsp">登录</a></li>
                             <li><a href="register.jsp">注册</a></li>
@@ -136,7 +136,7 @@
                     </li>
                     <li class="pull-right">
                         <div class="cart dropdown">
-                            <a href="countOrder" class="cart-item dropdown-toggle"> <span class="totlecount">0</span>
+                            <a href="/countCart" class="cart-item dropdown-toggle"> <span class="totalCount">0</span>
                                 <i class="fa fa-cart-plus"></i>
                             </a>
                         </div>
@@ -152,9 +152,8 @@
                     <div class="dropdown category-bar">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"
                            role="button" aria-haspopup="true" aria-expanded="true"><!--  <i
-							class="fa fa-bars"> --></i><span class="li_size"> Seven商城 </span>
+							class="fa fa-bars"> --></i><span class="li_size"> 药店商城 </span>
                         </a>
-
                     </div>
                 </div>
                 <div class="col-sm-8 col-md-8 col-lg-7 p-0">
@@ -173,9 +172,9 @@
                                  id="bs-example-navbar-collapse-1">
                                 <ul class="nav navbar-nav li_size">
                                     <li><a href="index.jsp">主页</a></li>
-                                    <li><a href="/getFruit">鲜果</a></li>
-                                    <li><a href="/getFresh">生鲜</a></li>
-                                    <li><a href="/getVegetables">蔬菜</a></li>
+                                    <li><a href="/getProducts?productTypeId=1">中药</a></li>
+                                    <li><a href="/getProducts?productTypeId=2">西药</a></li>
+                                    <li><a href="/getProducts?productTypeId=3">儿童药品</a></li>
                                     <li><a href="about.jsp">商城简介</a></li>
                                 </ul>
                             </div>
@@ -194,7 +193,7 @@
 </header>
 <div class="heading-inner-page">
     <div class="container">
-        <h2>订单</h2>
+        <h2><span style="color: #0b0b0b;font-weight: bold">订单</span></h2>
     </div>
 </div>
 <!-- order-->
@@ -239,25 +238,30 @@
                         <div class="box-bd">
                             <div class="clearfix xm-address-list" id="checkoutAddrList">
                                 <dl class="item">
-                                    <dt>
-                                        <strong class="itemConsignee">小狗</strong>
-                                        <span class="itemTag tag">家</span>
-                                    </dt>
                                     <dd>
+                                        <select style="width: 100%">
+                                            <%
+                                                for (AddressInfo addressInfo : addressInfoList) {
+                                            %>
+                                                <option value="<%=addressInfo.getAddressId()%>"><%=addressInfo.getProvince()+"/"+addressInfo.getCity()+"/"+addressInfo.getArea()+"/"+addressInfo.getStreet()%></option>
+                                            <%}%>
+                                        </select>
+                                    </dd>
+                                    <%--<strong class="itemConsignee">小狗</strong>
+                                    <span class="itemTag tag">家</span>--%>
+                                    <%--<dt></dt>--%>
+                                    <%--<dd>
                                         <p class="tel itemTel">15900112233</p>
                                         <p class="itemRegion">北京 大兴区 亦庄</p>
                                         <p class="itemStreet">青年公寓</p>
-                                        <!--编辑默认信息-->
-                                        <!--span class="edit-btn J_editAddr">编辑</span-->
                                     </dd>
                                     <dd style="display:none">
-                                        <input type="radio" name="Checkout[address]" class="addressId"
-                                               value="10140916720030323">
-                                    </dd>
+                                        <input type="radio" name="Checkout[address]" class="addressId" value="10140916">
+                                    </dd>--%>
                                 </dl>
                                 <div class="item use-new-addr" id="J_useNewAddr" data-state="off">
                                     <span class="iconfont onticon-add"><img src="images/add_cart.png"/></span>
-                                    <div id="newaddress">使用新地址</div>
+                                    <div>使用新地址</div>
                                 </div>
                             </div>
                         </div>
@@ -272,9 +276,7 @@
                                     <ul id="checkoutPaymentList" class="checkout-option-list clearfix J_optionList">
                                         <li class="item selected">
                                             <input type="radio" name="Checkout[pay_id]" checked="checked" value="1">
-                                            <p>
-                                                在线支付 <span></span>
-                                            </p>
+                                            <p>在线支付</p>
                                         </li>
                                     </ul>
                                 </div>
@@ -289,14 +291,12 @@
                                         <li class="item selected">
                                             <input type="radio" data-price="0" name="Checkout[shipment_id]"
                                                    checked="checked" value="1">
-                                            <p>
-                                                快递配送（免运费） <span></span>
-                                            </p>
+                                            <p>快递配送（免运费）</p>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
-                            <!-- 配送方式 END-->                    <!-- 配送方式 END-->
+                            <!-- 配送方式 END-->
                         </div>
                         <!-- 送货时间 -->
                         <div class="xm-box">
@@ -305,8 +305,8 @@
                             </div>
                             <div class="box-bd">
                                 <ul class="checkout-option-list clearfix J_optionList">
-                                    <li class="item selected"><input type="radio" checked="checked"
-                                                                     name="Checkout[best_time]" value="1">
+                                    <li class="item selected">
+                                        <input type="radio" checked="checked" name="Checkout[best_time]" value="1">
                                         <p>不限送货时间<span>周一至周日</span></p></li>
                                     <li class="item "><input type="radio" name="Checkout[best_time]" value="2">
                                         <p>工作日送货<span>周一至周五</span></p></li>
@@ -324,11 +324,11 @@
                                 </div>
                                 <div class="box-bd">
                                     <ul class="checkout-option-list checkout-option-invoice clearfix J_optionList J_optionInvoice">
-                                        <li class="hide">
-                                            电子个人发票4
+                                        <li class="item">
+                                            <input type="radio" class="needInvoice" value="0" name="Checkout[invoice]">
+                                            <p>不开发票</p>
                                         </li>
                                         <li class="item selected">
-                                            <!--<label><input type="radio"  class="needInvoice" value="0" name="Checkout[invoice]">不开发票</label>-->
                                             <input type="radio" checked="checked" value="4" name="Checkout[invoice]">
                                             <p>电子发票（非纸质）</p>
                                         </li>
@@ -337,31 +337,28 @@
                                             <p>普通发票（纸质）</p>
                                         </li>
                                     </ul>
-                                    <p id="eInvoiceTip" class="e-invoice-tip ">
+                                    <%--<p id="eInvoiceTip" class="e-invoice-tip ">
                                         电子发票是税务局认可的有效凭证，可作为售后维权凭据，不随商品寄送。开票后不可更换纸质发票，如需报销请选择普通发票。<a
                                             href="http://bbs.xiaomi.cn/thread-9285999-1-1.html"
                                             target="_blank">什么是电子发票？</a>
-                                    </p>
+                                    </p>--%>
                                     <div class="invoice-info nvoice-info-1" id="checkoutInvoiceElectronic"
                                          style="display:none;">
-
                                         <p class="tip">电子发票目前仅对个人用户开具，不可用于单位报销 ，不随商品寄送</p>
                                         <p>发票内容：购买商品明细</p>
                                         <p>发票抬头：个人</p>
-                                        <p>
-                                            <span class="hide"><input type="radio" value="4"
-                                                                      name="Checkout[invoice_type]" checked="checked"
-                                                                      id="electronicPersonal"
-                                                                      class="invoiceType"></span>
+                                        <%--<p><span class="hide">
+                                            <input type="radio" value="4" name="Checkout[invoice_type]"
+                                                   checked="checked" id="electronicPersonal" class="invoiceType"></span>
                                         <dl>
                                             <dt>什么是电子发票?</dt>
                                             <dd>&#903; 电子发票是纸质发票的映像，是税务局认可的有效凭证，与传统纸质发票具有同等法律效力，可作为售后维权凭据。</dd>
                                             <dd>&#903; 开具电子服务于个人，开票后不可更换纸质发票，不可用于单位报销。</dd>
-                                            <dd>&#903; 您在订单详情的"发票信息"栏可查看、下载您的电子发票。<a
-                                                    href="http://bbs.xiaomi.cn/thread-9285999-1-1.html" target="_blank">什么是电子发票？</a>
+                                            <dd>&#903; 您在订单详情的"发票信息"栏可查看、下载您的电子发票。
+                                                <a href="#" target="_blank">什么是电子发票？</a>
                                             </dd>
                                         </dl>
-                                        </p>
+                                        </p>--%>
                                     </div>
                                     <div class="invoice-info invoice-info-2" id="checkoutInvoiceDetail"
                                          style="display:none;">
@@ -385,12 +382,11 @@
                                                 单位
                                             </li>
                                         </ul>
-                                        <div id='CheckoutInvoiceTitle' class=" hide  invoice-title">
-                                            <label for="Checkout[invoice_title]">单位名称：</label>
+                                        <div id='CheckoutInvoiceTitle' class="hide  invoice-title">
+                                            <label>单位名称：</label>
                                             <input name="Checkout[invoice_title]" type="text" maxlength="49" value=""
                                                    class="input"> <span class="tip-msg J_tipMsg"></span>
                                         </div>
-
                                     </div>
 
                                 </div>
@@ -420,13 +416,12 @@
                                                         <img src="images/1.jpg" width="40" height="40"/>
                                                     </div>
                                                     <div class="g-info name">
-                                                        苹果
+                                                        药品
                                                     </div>
                                                 </div>
-
-                                                <div class="col col-2 price">10</div>
-                                                <div class="col col-3 count">1</div>
-                                                <div class="col col-4 totle">00000</div>
+                                                <div class="col col-2 price">0</div>
+                                                <div class="col col-3 count">0</div>
+                                                <div class="col col-4 total">0</div>
                                             </div>
 
                                         </dd>
@@ -440,14 +435,10 @@
                                         <div class="checkout-price">
                                             <ul>
                                                 <li>
-                                                    订单总额：<span>39元</span>
+                                                    订单总额：<span class="totalPrice">0元</span>
                                                 </li>
                                                 <li>
                                                     活动优惠：<span>-0元</span>
-                                                    <script type="text/javascript">
-                                                        checkoutConfig.activityDiscountMoney = 0;
-                                                        checkoutConfig.totalPrice = 39.00;
-                                                    </script>
                                                 </li>
                                                 <li>
                                                     优惠券抵扣：<span id="couponDesc">-0元</span>
@@ -456,16 +447,18 @@
                                                     运费：<span id="postageDesc">0元</span>
                                                 </li>
                                             </ul>
-                                            <p class="checkout-total">应付总额：<span><strong
-                                                    id="totalPrice">39</strong>元</span></p>
+                                            <p class="checkout-total">应付总额：
+                                                <span>
+                                                    <strong class="totalPrice">0元</strong>
+                                                </span>
+                                            </p>
                                         </div>
-                                        <!--  -->
                                     </div>
                                 </div>
                             </div>
 
                             <!--S 加价购 产品选择弹框 -->
-                            <div class="modal hide modal-choose-pro" id="J_choosePro-664">
+                            <%--<div class="modal hide modal-choose-pro" id="J_choosePro-664">
                                 <div class="modal-header">
                                     <span class="close" data-dismiss='modal'><i class="iconfont">&#xe617;</i></span>
                                     <h3>选择产品</h3>
@@ -487,30 +480,24 @@
                                 <div class="modal-footer">
                                     <a href="#" class="btn btn-disabled J_chooseProBtn">加入购物车</a>
                                 </div>
-                            </div>
+                            </div>--%>
                             <!--E 加价购 产品选择弹框 -->
-
                             <!--S 保障计划 产品选择弹框 -->
-
-
                         </div>
                         <!-- 商品清单 END -->
                         <input type="hidden" id="couponType" name="Checkout[couponsType]">
                         <input type="hidden" id="couponValue" name="Checkout[couponsValue]">
                         <div class="checkout-confirm">
-
-                            <a href="#" class="btn btn-lineDakeLight btn-back-cart">返回购物车</a>
+                            <a href="/countCart" class="btn btn-lineDakeLight btn-back-cart">返回购物车</a>
                             <!--  input type="submit" class="btn btn-primary" value="立即下单" id="checkoutToPay" />-->
-                            <a class="btn btn-primary" href="order_succeed.jsp">立即下单</a>
+                            <a class="btn btn-primary" id="orderSucceed" href="#">立即下单</a>
                         </div>
                     </div>
                 </div>
-
             </form>
 
         </div>
-        <!-- 禮品卡提示 S-->
-        <div class="modal hide lipin-modal" id="lipinTip">
+        <%--<div class="modal hide lipin-modal" id="lipinTip">
             <div class="modal-header">
                 <h2 class="title">温馨提示</h2>
                 <p> 为保障您的利益与安全，下单后礼品卡将会被使用，<br>
@@ -527,10 +514,10 @@
                 <span class="btn btn-primary" id="useGiftCard">确认下单</span><span class="btn btn-dakeLight"
                                                                                 id="closeGiftCard">返回修改</span>
             </div>
-        </div>
+        </div>--%>
         <!--  禮品卡提示 E-->
         <!-- 预售提示 S-->
-        <div class="modal hide yushou-modal" id="yushouTip">
+        <%--<div class="modal hide yushou-modal" id="yushouTip">
             <div class="modal-body">
                 <h2>请确认收货地址及发货时间</h2>
                 <ul class="list">
@@ -559,7 +546,7 @@
                 <span class="btn btn-primary" id="yushouCheckout">继续下单</span>
 
             </div>
-        </div>
+        </div>--%>
         <!--  预售提示 E-->
 
         <script type="text/javascript" src="js/jquery/order_base.min.js"></script>

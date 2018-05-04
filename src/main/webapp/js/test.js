@@ -8,7 +8,6 @@ var region_init = function (_region_p, _region_c, _region_d, _region_p_default, 
             if (cmb.options[i].value == value) {
                 cmb.selectedIndex = i;
                 return;
-
             }
         }
     }
@@ -48,6 +47,7 @@ var region_init = function (_region_p, _region_c, _region_d, _region_p_default, 
     for (var i = 0; i < province_enum.length; i++) {
         option_items_add(region_p, province_enum[i].id, province_enum[i].name, province_enum[i]);
     }
+
     option_items_select(region_p, _region_p_default);
     region_p_change();
     region_p.onchange = region_p_change;

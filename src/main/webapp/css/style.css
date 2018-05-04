@@ -1,18 +1,4 @@
 /*
-Project Name: Organic
-File: Style.css
-Version: 1.0
-Date: 04/14/2017
-Author Name: t3theme
-Author URI:https://themeforest.net/user/t3theme/portfolio
-Email:ndktheme@gmail.com
-
-------------------------
-NOTE:
-PLEASE DO NOT EDIT THIS CSS, IF YOU NEED USE "CUSTOM.CSS" FILE FOR WRITING YOUR CUSTOM CSS.
-I WILL RELEASE FUTURE UPDATES SO IT WILL OVERWRITE THIS FILE IT'S BETTER USE "CUSTOM.CSS".
-------------------------
-
 Table of Contents
 	01. Top header
 	02. Main menu
@@ -127,10 +113,10 @@ button, input{
 	z-index:0!important;
 }
 body.bg-m{
-	background-image:url(../images/11.jpg);
+	background-image:url(../images/bg-6.png);
 	background-repeat:no-repeat;
-	background-position:top left;
-	background-size:32%;
+	background-position:105px 140px;
+	background-size:290px 480px;
 }
 .logo{
 	display:block;
@@ -500,7 +486,7 @@ form{
 .heading-inner-page{
 	background:url('../images/slide-img2.jpg');
 	background-size:100%;
-	height:190px;
+	height:130px;
 	text-align:center;
 	padding-top:55px;
 }
@@ -779,14 +765,14 @@ img.mfp-img{
 	background-position:right bottom;
 }
 .bg-img-1{
-	background-image:url('../images/13.jpg');
+	background-image:url('../images/bg-11.png');
 	background-repeat:no-repeat;
 	height:500px;
 }
 .bg-img-2{
-	background-image:url('../images/11.jpg');
+	background-image:url('../images/bg-14.jpg');
 	background-repeat:no-repeat;
-	background-size:40%;
+	background-size:30%;
 }
 .bg-img-3{
 	background-image:url('../images/bg-21.png');

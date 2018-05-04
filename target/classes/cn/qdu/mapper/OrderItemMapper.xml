@@ -21,15 +21,13 @@
     <result column="productType" jdbcType="VARCHAR" property="productType" />
   </resultMap>
   
-  <select id="selectByOrderId" parameterType="int" resultType="cn.qdu.entity.OrderItem">
-    SELECT * from orderItem where orderId = #{orderId}
+  <select id="selectByOrderId" parameterType="int" resultMap="OrderItemResultMap">
+    SELECT * from orderItem  where orderId = #{orderId}
   </select>
   
   <insert id="insert" parameterType="cn.qdu.entity.OrderItem">
-    insert into orderitem (orderId, productId, productCount
-      )
-    values (#{orderId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, #{productCount,jdbcType=INTEGER}
-      )
+    insert into orderitem (orderId, productId, productCount)
+    values (#{orderId,jdbcType=INTEGER}, #{productInfo.productId,jdbcType=INTEGER}, #{productCount,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="cn.qdu.entity.OrderItem">
     insert into orderitem

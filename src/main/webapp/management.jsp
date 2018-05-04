@@ -81,7 +81,7 @@
     <div id="top" class="row col-md-12">
         <img src="images/slide-img2.jpg"/>
         <div>
-            <h1>在线药店购物商城后台管理</h1>
+            <h1><span style="color: #0b0b0b;font-weight: bold">在线药店购物商城后台管理</span></h1>
         </div>
     </div>
     <div id="middle" class="row">
@@ -133,7 +133,6 @@
                     </tr>
                 </table>
 
-
                 <table class="table table-bordered li21">
                     <tr>
                         <th>商品编号</th>
@@ -146,7 +145,6 @@
                         <th>操作</th>
                     </tr>
                     <tr>
-
                         <td><input class="form-control col-sm-1" type="text"
                                    name="productId"></td>
                         <td><input class="form-control col-sm-1" type="text"
@@ -167,7 +165,6 @@
 
                     </tr>
                 </table>
-
 
                 <table class="table table-bordered li31">
                     <tr>

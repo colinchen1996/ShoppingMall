@@ -20,5 +20,5 @@ public interface AddressInfoDao {
 
     List<AddressInfo> selectByUserId(Integer userId);
 
-    List<AddressInfo> selectByAddressId(Integer addressId);
+    AddressInfo selectByAddressId(Integer addressId);
 }

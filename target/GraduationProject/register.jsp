@@ -8,12 +8,13 @@
         #mess1 {
             color: red
         }
-
         #mess2 {
             color: red
         }
-
         #mess3 {
+            color: red
+        }
+        #mess4 {
             color: red
         }
     </style>
@@ -26,13 +27,11 @@
                 $("#mess1").html("");
                 var val = this.value;
                 if (val.length < 3) {
-                    //alert($.md5("1"));
-                    $("#mess1").html("用户名的长度至少3位");
+                    $("#mess1").html("用户名的长度至少3位！");
                     return false;
-                }
-                else
+                } else {
                     $("#mess1").html("");
-
+                }
                 $.ajax({
                     url: "registerCheck",
                     type: "get",
@@ -40,7 +39,7 @@
                     dataType: "text",
                     success: function (result) {
                         if (result == "true")
-                            $("#mess1").html("用户名已被使用");
+                            $("#mess1").html("该用户名已被使用！");
                         else
                             $("#mess1").html("");
                     },
@@ -53,7 +52,7 @@
                 $("#mess3").html("");
                 var val = this.value;
                 if (val.length != 11) {
-                    $("#mess3").html("手机号必须为11位");
+                    $("#mess3").html("手机号必须为11位！");
                     return false;
                 }
                 $.ajax({
@@ -63,7 +62,7 @@
                     dataType: "text",
                     success: function (result) {
                         if (result == "true")
-                            $("#mess3").html("该号码已被使用");
+                            $("#mess3").html("该号码已被使用！");
                         else
                             $("#mess3").html("");
                     },
@@ -85,7 +84,7 @@
                     dataType: "text",
                     success: function (result) {
                         if (result == "true")
-                            $("#mess2").html("邮箱已被使用");
+                            $("#mess2").html("该邮箱已被使用！");
                         else
                             $("#mess2").html("");
                     },
@@ -94,30 +93,39 @@
                 });
             });
 
-            $("#button").click(function () {
-                if ($("#agree").prop('checked') == true) {
-                    $("#input[type='text']").trigger("blur");
-                    if ($("#mess1").html().length > 0 || $("#mess2").html().length > 0 || $("#mess3").html().length > 0) {
-                        return false;
-                    } else {
-                        $.post("/register",
-                            {
-                                name: $("input[name='name']").prop("value"),
-                                email: $("input[name='email']").prop("value"),
-                                phone: $("input[name='phone']").prop("value"),
-                                password: $.md5($("input[name='password']").prop("value"))
-                            },
-                            function (result) {
-                                if (result == "true") {
-                                    alert("注册成功！")
-                                    window.location.href = 'login.jsp';
-                                }else {
-                                    alert("对不起，请重新注册！")
-                                    //window.location.href ='register.jsp';
-                                }
-                            }, "text");
+            $("#input-password").blur(function () {
+                $("#mess4").html("1111");
+                var val = this.value;
+                if (val.length < 6) {
+                    $("#mess4").html("密码不能小于6位数！");
+                    return false;
+                }
+            });
 
-                    }
+            $("#register").click(function () {
+                var name = $("input[name='name']").prop("value");
+                var email = $("input[name='email']").prop("value");
+                var phone = $("input[name='phone']").prop("value");
+                var password = $.md5($("input[name='password']").prop("value"));
+                if (name == "" || email == "" || phone == "" || password == "") {
+                    alert("请正确填写注册信息！");
+                    return false;
+                } else {
+                    $.post("/register",
+                        {
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            password: password
+                        },
+                        function (result) {
+                            if (result == "true") {
+                                alert("注册成功！")
+                                window.location.href = 'login.jsp';
+                            } else {
+                                alert("对不起，请重新注册！")
+                            }
+                        }, "text");
                 }
             });
         });
@@ -155,78 +163,6 @@
                     <img src="images/logo.png" alt="logo">
                 </a>
             </div>
-            <div class="col-sm-9">
-                <ul class="top-link pull-right">
-                    <!--<li class="hidden-xs"><a href="">收藏夹</a></li>-->
-                    <!--<li class="hidden-xs"><a href="#">分类</a></li>-->
-
-                    <li class="hidden-xs"><a>用户名</a></li>
-                    <li class="dropdown hidden-xs">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
-                           aria-haspopup="true" aria-expanded="false">我的账户 <span class="caret"></span></a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a href="login.jsp">登录</a></li>
-                            <li><a href="register.jsp">注册</a></li>
-                            <li><a href="" onclick="return false;" id="logout">注销</a></li>
-
-                        </ul>
-                    </li>
-                    <li class="pull-right">
-                        <div class="cart dropdown">
-                            <a href="#" class="cart-item dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                                <span>2</span><i class="fa fa-cart-plus"></i>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                <li>
-                                    <div class="media">
-                                        <div class="media-left">
-                                            <a href="#">
-                                                <img class="media-object" src="images/9.jpg" width="50" alt="...">
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h4 class="product-name">Strawberry</h4>
-                                            <p>$15.0<span> x 3</span> <i class="fa fa-remove"></i></p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="media">
-                                        <div class="media-left">
-                                            <a href="#">
-                                                <img class="media-object" src="images/8.jpg" width="50" alt="...">
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h4 class="product-name">Red bell pepper</h4>
-                                            <p>$15.0<span> x 3</span> <i class="fa fa-remove"></i></p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="table-div">
-                                    <ul class="table-content">
-                                        <li class="row m-0">
-                                            <div class="col col-xs-6">
-                                                <strong>Total:</strong>
-                                            </div>
-                                            <div class="col col-xs-6 color-3 f-bold">
-                                                $90.00
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <p>
-                                        <a href="#" class="btn ht-btn bg-3">Checkout</a>
-                                        <a href="#" class="btn ht-btn bg-6">Cart</a>
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            </div>
         </div>
     </div>
     <div class="container">
@@ -236,17 +172,8 @@
                     <div class="dropdown category-bar">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="true">
-                            <i class="fa fa-bars"></i><span>分类</span>
+                            <!--<i class="fa fa-bars"></i>--><span>药店商城</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#"><span><img src="images/25.jpg" width="50" alt="image"></span>蔬菜</a></li>
-                            <li><a href="#"><span><img src="images/18.jpg" width="50" alt="image"></span>西兰花</a></li>
-                            <li><a href="#"><span><img src="images/16.jpg" width="50" alt="image"></span>卷心菜</a></li>
-                            <li><a href="#"><span><img src="images/22.jpg" width="50" alt="image"></span>豆荚</a></li>
-                            <li><a href="#"><span><img src="images/21.jpg" width="50" alt="image"></span>西红柿</a></li>
-                            <li><a href="#"><span><img src="images/20.jpg" width="50" alt="image"></span>水果</a></li>
-                            <li><a href="#"><span><img src="images/19.jpg" width="50" alt="image"></span>有机</a></li>
-                        </ul>
                     </div>
                 </div>
                 <div class="col-sm-8 col-md-8 col-lg-7 p-0">
@@ -264,9 +191,9 @@
                             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                                 <ul class="nav navbar-nav li_size">
                                     <li><a href="index.jsp">主页</a></li>
-                                    <li><a href="/getFruit">鲜果</a></li>
-                                    <li><a href="/getFresh">生鲜</a></li>
-                                    <li><a href="/getVegetables">蔬菜</a></li>
+                                    <li><a href="/getProducts?productTypeId=1">中药</a></li>
+                                    <li><a href="/getProducts?productTypeId=2">西药</a></li>
+                                    <li><a href="/getProducts?productTypeId=3">儿童药品</a></li>
                                     <li><a href="about.jsp">商城简介</a></li>
                                 </ul>
                             </div>
@@ -276,7 +203,7 @@
                 <div class="col-sm-3 col-md-3 col-lg-3 p-0">
                     <div class="search-box m-l-xs-15 m-r-xs-15">
                         <input type="text" class="form-item" placeholder="搜索....">
-                        <button type="submit" class="fa fa-search"></button>
+                        <%--<button type="submit" class="fa fa-search"></button>--%>
                     </div>
                 </div>
             </div>
@@ -285,7 +212,7 @@
 </header>
 <div class="heading-inner-page">
     <div class="container">
-        <h2>注册</h2>
+        <h2><span style="color: #0b0b0b;font-weight: bold">注册</span></h2>
         <ul class="breadcrumb">
             <li><a href="#">首页</a></li>
             <li>注册</li>
@@ -323,14 +250,12 @@
                                 <label class="control-label" for="input-password">密码</label>
                                 <input type="password" name="password" value="" placeholder="密码" id="input-password"
                                        class="form-control form-item" style="width: 200px">
+                                <span id="mess4" class="pull-right"></span>
                             </div>
                             <div class="m-t-15">
-                                <input type="checkbox" name="agree" id="agree" class="m-r-10" value="1"> 我已经阅读并同意了
-                                <a href="#" class="agree"><b class="color-6">隐私声明</b></a>
-                                <br>
+                                <a href="#" id="register" class="btn ht-btn bg-6" class="pull-right">注册</a>
+                                <a href="login.jsp" class="btn ht-btn bg-6" class="pull-right">登录</a>
                             </div>
-                            <input type="button" id="button" value="注册" class="btn ht-btn bg-6 m-t-30">
-                            <!-- 						<button type="submit" class="btn ht-btn bg-6 m-t-30">注册</button> -->
                         </form>
                     </div>
                 </div>

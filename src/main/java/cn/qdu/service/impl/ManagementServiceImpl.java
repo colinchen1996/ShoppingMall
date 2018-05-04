@@ -66,8 +66,8 @@ public class ManagementServiceImpl implements ManagementService {
 	}
 
 	@Override
-	public void deleteProduct(int productId) {
-		productInfoDao.deleteByPrimaryKey(productId);
+	public int deleteProduct(int productId) {
+		return productInfoDao.deleteByPrimaryKey(productId);
 	}
 
 	@Override

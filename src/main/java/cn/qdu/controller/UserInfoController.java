@@ -1,17 +1,17 @@
 package cn.qdu.controller;
 
 import cn.qdu.dao.*;
-import cn.qdu.entity.*;
+import cn.qdu.entity.AddressInfo;
+import cn.qdu.entity.OrderInfo;
+import cn.qdu.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -29,126 +29,50 @@ public class UserInfoController {
     ProductInfoDao productInfoDao;
 
     @RequestMapping("/deleteUserAddress")
-    public void deleteUserInfoAddress(HttpServletRequest request, HttpServletResponse response) {
-        //request.setCharacterEncoding("utf-8");
-        String addressId = request.getParameter("addressId");
-        int id = Integer.valueOf(addressId).intValue();
-        //AddressInfo address = new AddressInfo();
-        //UserInfo user = new UserInfo();
-        //address.setAddressId(i);
-        //Object[] param = {address.getAddressId()};
-        //List<UserInfo> userlist = new UserDaoImpl().select("SELECT u.userName FROM userinfo u where u.userId = (SELECT userId FROM addressinfo where addressId = ?)", param);
-        //Object[] param1 = {userlist.get(0).getUserName() };
-        //Boolean boolean1 = new AddressDaoImpl().deleteAddress("DELETE from addressinfo WHERE addressId = ?", param);
-        addressInfoDao.deleteByPrimaryKey(id);
-        //if (boolean1 == true) {
-//			List<User> userlist1 = new UserDaoImpl().select("SELECT * from userinfo where userName = ?", param1);
-        //List<AddressInfo> addresslist = new AddressDaoImpl().selectAddress("SELECT a.* from userinfo u,addressinfo a WHERE a.userId=u.userId AND u.userName = ?", param1);
-        AddressInfo addressInfo = addressInfoDao.selectByPrimaryKey(id);
-        List<AddressInfo> addresslist = addressInfoDao.selectByUserId(addressInfo.getUserId());
-        request.getSession().setAttribute("addresslist", addresslist);
+    public void deleteUserInfoAddress(int addressId, HttpServletRequest request, HttpServletResponse response) {
+        AddressInfo addressInfo = addressInfoDao.selectByPrimaryKey(addressId);
+        addressInfoDao.deleteByPrimaryKey(addressId);
+        List<AddressInfo> addressList = addressInfoDao.selectByUserId(addressInfo.getUserId());
+        request.getSession().setAttribute("addressList", addressList);
         try {
             response.sendRedirect("userInfo.jsp");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //}
     }
 
     @RequestMapping("/getUserInfo")
-    public void getUserInfo(HttpServletResponse response, HttpServletRequest request, HttpSession session){
-        //request.setCharacterEncoding("utf-8");
-        String userName = request.getParameter("name");
-        //String email = request.getParameter("email");
-        //String phoneNumeber = request.getParameter("phoneNumeber");
-        //String address = request.getParameter("address");
-        //UserInfo user = new UserInfo();
-        //user.setUserName(userName);
-        //user.setEmail(email);
-        //user.setPhoneNumber(phoneNumeber);
-        List<Object> list1 = new ArrayList<Object>() ;
-        List<Object> list2 = new ArrayList<Object>();
-        List<Object> list3 = new ArrayList<Object>();
-
-        //Object[] param = {user.getUserName()};
-        //List<User> userlist = new UserDaoImpl().select("SELECT * from userinfo where userName = ? ", param);
-        UserInfo userInfo = userInfoDao.selectByUserName(userName);
-        //List<Address> addresslist = new AddressDaoImpl().selectAddress("SELECT a.* from userinfo u,addressinfo a WHERE a.userId=u.userId AND u.userName = ?", param);
+    public void getUserInfo(HttpServletResponse response, HttpSession session) {
+        UserInfo userInfo = (UserInfo) session.getAttribute("loginUserInfo");
         List<AddressInfo> addressList = addressInfoDao.selectByUserId(userInfo.getUserId());
-        //Object[] param4 = {userlist.get(0).getUserId()};
-        //List<Order> orderlist = new OrderDaoImpl().select("SELECT DISTINCT i.*,s.orderStatus from orderinfo i, orderstatusinfo s where i.orderStatusId = s.orderStatusId and i.userId = ? ", param4);
         List<OrderInfo> orderList = orderInfoDao.selectByUserId(userInfo.getUserId());
-        for (int i = 0; i < orderList.size(); i++) {
-//            int i1=orderList.get(i).getOrderId();
-//            int i2=orderList.get(i).getAddressInfo().getAddressId();
-//            Object[] param1 = {i1};
-//            Object[] param2 = {i2};
-//
-//            List<OrderItem> OrderItemlist = new OrderItemDaoImpl().select("SELECT * from orderitem where orderId = ?", param1);
-//            List<Product> productlist = new ProductDaoImpl().select("SELECT p.* from productinfo p,orderinfo o,orderitem oo where o.orderId = oo.orderId AND oo.productId = p.productId and o.orderId =?",param1);
-//            List<Address> addresslist1 = new AddressDaoImpl().selectAddress("SELECT * from addressinfo WHERE addressId= ?", param2);
-            List<OrderItem> orderItemList = orderItemDao.selectByOrderId(orderList.get(i).getOrderId());
-            List<ProductInfo> productList = productInfoDao.selectByOrderId(orderList.get(i).getOrderId());
-            List<AddressInfo> addresslist1 = new ArrayList<AddressInfo>();
-            if(orderList.get(i).getAddressInfo() != null){
-                addresslist1 = addressInfoDao.selectByAddressId(orderList.get(i).getAddressInfo().getAddressId());
-            }
-            list1.add(addresslist1);
-            list2.add(productList);
-            list3.add(orderItemList);
-        }
-//        request.getSession().setAttribute("userInfo", userInfo);
-//        request.getSession().setAttribute("addresslist", addressList);
-//        request.getSession().setAttribute("orderList", orderList);
-//        request.getSession().setAttribute("list1", list1);
-//        request.getSession().setAttribute("list2",list2);
-//        request.getSession().setAttribute("list3",list3);
-
-        session.setAttribute("userInfo", userInfo);
-        session.setAttribute("addresslist", addressList);
+        session.setAttribute("addressList", addressList);
         session.setAttribute("orderList", orderList);
-        session.setAttribute("list1", list1);
-        session.setAttribute("list2",list2);
-        session.setAttribute("list3",list3);
-            //request.getRequestDispatcher("userInfo.jsp").forward(request, response);
+        session.setMaxInactiveInterval(10 * 60 * 60);
         try {
             response.sendRedirect("userInfo.jsp");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //return "userInfo";
-        //response.getWriter().print(1);
     }
 
-    @RequestMapping("updateAddress")
-    public void updateAddress(HttpServletRequest request, HttpServletResponse response){
-        //request.setCharacterEncoding("utf-8");
-        String province = request.getParameter("province");
-        String city = request.getParameter("city");
-        String area = request.getParameter("area");
-        String street = request.getParameter("street");
-        String userName = request.getParameter("name");
+    @RequestMapping("/getUserAddress")
+    public void getUserAddress(HttpSession session) {
+        UserInfo userInfo = (UserInfo) session.getAttribute("loginUserInfo");
+        List<AddressInfo> addressList = addressInfoDao.selectByUserId(userInfo.getUserId());
+        session.setAttribute("addressList", addressList);
+    }
 
-        AddressInfo address = new AddressInfo();
-        address .setProvince(province);
-        address .setCity(city);
-        address .setArea(area);
-        address .setStreet(street);
-        //UserInfo user = new UserInfo();
-        //user.setUserName(userName);
-        //Object[] param = {user.getUserName()};
-        //List<User> userlist = new UserDaoImpl().select("SELECT u.userId FROM userinfo u where u.userName = ?", param);
-        //Object[] param1 ={userlist.get(0).getUserId(),address.getProvince(),address.getCity(),address.getArea(),address.getStreet()};
-        //Boolean boolean1 = new AddressDaoImpl().updateAddress("INSERT into addressinfo (userId, province, city, area, street) VALUES(?,?,?,?,?)", param1);
+    @RequestMapping("/addAddress")
+    public void addAddress(AddressInfo address, String userName, HttpServletRequest request, HttpServletResponse response) {
         int userId = userInfoDao.selectUserIdByUserName(userName);
         address.setUserId(userId);
         int result = addressInfoDao.insert(address);
         if (result > 0) {
-            //List<Address> addresslist = new AddressDaoImpl().selectAddress("SELECT a.* from userinfo u,addressinfo a WHERE a.userId=u.userId AND u.userName = ?", param);
             List<AddressInfo> addressList = addressInfoDao.selectByUserId(userId);
-            request.getSession().setAttribute("addresslist", addressList);
+            request.getSession().setAttribute("addressList", addressList);
             try {
-                response.getWriter().print(1);
+                response.getWriter().print(0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -156,27 +80,13 @@ public class UserInfoController {
     }
 
     @RequestMapping("/updateUserInfo")
-    public void updateUserInfo(HttpServletRequest request, HttpServletResponse response){
-        //request.setCharacterEncoding("utf-8");
-        String userName = request.getParameter("name");
-        String email = request.getParameter("email");
-        String phoneNumeber = request.getParameter("phoneNumeber");
-
-        UserInfo user = new UserInfo();
-        user.setUserName(userName);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumeber);
-
-       // Object[] param = { user.getEmail(), user.getPhoneNumber(), user.getUserName() };
-        //Boolean boolean1 = new UserDaoImpl().update("UPDATE userinfo u SET u.email= ? ,u.phoneNumber= ? WHERE u.userName= ? ", param);
-        int userId = userInfoDao.selectUserIdByUserName(userName);
+    public void updateUserInfo(UserInfo user, HttpServletRequest request, HttpServletResponse response) {
+        int userId = userInfoDao.selectUserIdByUserName(user.getUserName());
         user.setUserId(userId);
         int result = userInfoDao.updateByPrimaryKeySelective(user);
         if (result > 0) {
-            //Object[] param1 = { user.getUserName() };
-            //List<User> userlist = new UserDaoImpl().select("SELECT * from userinfo where userName = ?", param1);
-            UserInfo newUserInfo = userInfoDao.selectByUserName(userName);
-            request.getSession().setAttribute("newUserInfo", newUserInfo);
+            UserInfo newUserInfo = userInfoDao.selectByUserName(user.getUserName());
+            request.getSession().setAttribute("userInfo", newUserInfo);
             try {
                 response.sendRedirect("userInfo.jsp");
             } catch (IOException e) {

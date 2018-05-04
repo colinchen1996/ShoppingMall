@@ -5,10 +5,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Fruit</title>
+    <title>药品</title>
     <!-- JqueryUI -->
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
     <!-- Bootstrap -->
@@ -25,8 +25,7 @@
     <link rel="stylesheet" type="text/css"
           href="css/magnific-popup/magnific-popup.css">
     <!-- Style -->
-    <link rel="stylesheet" type="text/css" href="css/style.css"
-          media="screen">
+    <link rel="stylesheet" type="text/css" href="css/style.css" media="screen">
     <!-- Fw -->
     <link rel="stylesheet" type="text/css" href="css/fw.css" media="screen">
     <!-- jQuery -->
@@ -43,58 +42,45 @@
     <script src="js/script.js"></script>
     <script>
         $(function () {
-            var totlecount = 0;
-
-            $.post("addCart", {"action": "totalcount"}, function (msg) {
-                totlecount = totlecount + parseInt(msg);
-                $('.totlecount').html(totlecount);
-            }, "text");
-            $('.into').click(function () {  //加入购物车
-                alert("添加成功")
-                $.post("addCart", {
-                        "productId": $(this).next().prop("title"),
-                        "count": $(this).next().next().prop("title"), "action": "add"
-                    }
-                    , function () {
-                        totlecount = totlecount + parseInt(msg);
-                        $('.totlecount').html(totlecount);
-                    }, "text");
-            })
-
-            $("#logout").click(function () {       //注销
-                $.ajax({
-                    url: "logOut",
-                    type: "post",
-                    data: {},
-                    dataType: "",
-                    success: function (result) {
-                        if (result == "true")
-                            $("#user").html("");
-                        else
-                            $("#user").html("");
-                    },
-                    error: function () {
-                    }
-                });
-            });
-            $("#yinuserInfo").click(function () {
-                $.post("getUserInfoServlet", {"name": $('#user').text()}, function () {
-                    window.location.href = "userInfo.jsp";
+            $.post("/getCartCount",
+                function (msg) {
+                    $('.totalCount').html(msg);
                 }, "text");
-            })
+
+            $('.into').click(function () {  //加入购物车
+                alert("添加成功!");
+                $.post("/addCart", {
+                    "productId": $(this).next().prop("title"),
+                    "count": 1
+                }, function (msg) {
+                    $('.totalCount').html(msg);
+                }, "text");
+            });
+
+            $("#logout").click(function () {//注销
+                alert("注销成功!");
+                $("#user").html("");
+                $.get("/logout");
+            });
+
+            $("#yinuserInfo").click(function () {
+                var userName = $('#user').text();
+                if (userName != null) {
+                    window.location.href = "/getUserInfo";
+                }
+            });
         });
     </script>
     <%
-        List<ProductInfo> list = (List) request.getAttribute("vegetablesList");
+        List<ProductInfo> list = (List<ProductInfo>) request.getAttribute("productList");
+        String productType = (String) request.getAttribute("productType");
     %>
 </head>
+
 <body>
-
-
 <%
     request.setCharacterEncoding("UTF-8");
     String name = (String) session.getAttribute("name");
-
 %>
 <div class="preloader">
     <i class="fa fa-spinner"></i>
@@ -110,22 +96,20 @@
                 <ul class="top-link pull-right">
                     <!--<li class="hidden-xs"><a href="">收藏夹</a></li>-->
                     <!--<li class="hidden-xs"><a href="#">分类</a></li>-->
-
-                    <li class="hidden-xs" id="yinuserInfo"><a id="user"><%
-                        if (name == null)
-                            out.print("");
-                        else {
-                            out.print(name);
-                        }
-                    %></a></li>
-
-                    <li class="hidden-xs"><a id="user">
-
-                    </a></li>
-                    <li class="dropdown hidden-xs"><a href="#"
-                                                      class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
-                                                      aria-haspopup="true" aria-expanded="false">我的账户 <span
-                            class="caret"></span></a>
+                    <li class="hidden-xs" id="yinuserInfo">
+                        <a id="user"><%
+                            if (name == null)
+                                out.print("");
+                            else {
+                                out.print(name);
+                            }
+                        %></a>
+                    </li>
+                    <!--<li class="hidden-xs"><a id="user"></a></li>-->
+                    <li class="dropdown hidden-xs">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
+                           aria-haspopup="true" aria-expanded="false">我的账户 <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a href="login.jsp">登录</a></li>
                             <li><a href="register.jsp">注册</a></li>
@@ -134,8 +118,8 @@
                     </li>
                     <li class="pull-right">
                         <div class="cart dropdown">
-                            <a href="countCart" class="cart-item dropdown-toggle"> <span class="totlecount">0</span><i
-                                    class="fa fa-cart-plus"></i>
+                            <a href="/countCart" class="cart-item dropdown-toggle">
+                                <span class="totalCount">0</span><i class="fa fa-cart-plus"></i>
                             </a>
                         </div>
                     </li>
@@ -149,24 +133,21 @@
                 <div class="col-sm-1 col-md-1 col-lg-2 p-0">
                     <div class="dropdown category-bar">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                           role="button" aria-haspopup="true" aria-expanded="true">
-                            <span class="li_size"> Seven商城 </span>
+                           role="button" aria-haspopup="true" aria-expanded="true"> <span
+                                class="li_size"> 药店商城 </span>
                         </a>
-
-
                     </div>
                 </div>
                 <div class="col-sm-8 col-md-8 col-lg-7 p-0">
                     <div class="main-menu">
                         <nav class="navbar navbar-default menu">
-
                             <div class="collapse navbar-collapse"
                                  id="bs-example-navbar-collapse-1">
                                 <ul class="nav navbar-nav li_size">
                                     <li><a href="index.jsp">主页</a></li>
-                                    <li><a href="/getFruit">鲜果</a></li>
-                                    <li><a href="/getFresh">生鲜</a></li>
-                                    <li><a href="/getVegetables">蔬菜</a></li>
+                                    <li><a href="/getProducts?productTypeId=1">中药</a></li>
+                                    <li><a href="/getProducts?productTypeId=2">西药</a></li>
+                                    <li><a href="/getProducts?productTypeId=3">儿童药品</a></li>
                                     <li><a href="about.jsp">商城简介</a></li>
                                 </ul>
                             </div>
@@ -185,22 +166,18 @@
 </header>
 <div class="heading-inner-page">
     <div class="container">
-        <h2>蔬菜</h2>
+        <h2><span style="color: #0b0b0b;font-weight: bold"><%out.print(productType);%></span></h2>
         <!--<ul class="breadcrumb">-->
         <!--<li><a href="#">首页</a></li>-->
-        <!--<li>蔬菜</li>-->
+        <!--<li>鲜果</li>-->
         <!--</ul>-->
     </div>
 </div>
 <!-- Login page -->
 <div>
     <div class="container text-center m-t-30">
-
-
         <div class="ht-tabs ht-tabs-product text-center">
-
             <!-- Tab panes -->
-
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="tab-description">
                     <div class="row">
@@ -210,25 +187,21 @@
                         <div class="col-sm-6 col-md-4 col-lg-3">
                             <!-- Product item -->
                             <div class="product-item">
-                                <a href="Product_detail_Servlet?idd=<%
-											out.print(list.get(i).getProductId());
-										%>"> <img src="images/<% out.print(list.get(i).getDefaultImg()); %>"
-                                                  alt="image">
+                                <a href="/getProductDetail?idd=<%out.print(list.get(i).getProductId());%>">
+                                    <img src="images/<%out.print(list.get(i).getDefaultImg());%>" alt="image">
                                 </a>
                                 <div class="product-caption">
                                     <h4 class="product-name">
-                                        <a href="#"><%
-                                            out.print(list.get(i).getProductName());
-                                        %></a>
+                                        <a href="#"><%out.print(list.get(i).getProductName());%></a>
                                     </h4>
                                     <div class="product-price-group">
-                                        <span class="product-price"><%
-                                            out.print("$" + list.get(i).getProductPrice()); %></span>
+											<span class="product-price"> <%
+                                                out.print("$" + list.get(i).getProductPrice());%>
+											</span>
                                     </div>
                                     <div class="ht-btn-group">
                                         <a href="#" onclick="return false;" class="into">加入购物车</a>
                                         <div title="<%out.print(list.get(i).getProductId());%>"></div>
-                                        <div title="1"></div>
                                     </div>
                                 </div>
                             </div>
@@ -236,44 +209,46 @@
                         <%
                             }
                         %>
-                        <%
-                            for (int i = 0; i < list.size(); i++) {
-                        %>
-                        <div class="col-sm-6 col-md-4 col-lg-3">
-                            <!-- Product item -->
-                            <div class="product-item">
-                                <a href="Product_detail_Servlet?idd=<%
-											out.print(list.get(i).getProductId());
-										%>"> <img src="images/<% out.print(list.get(i).getDefaultImg()); %>"
-                                                  alt="image">
-                                </a>
-                                <div class="product-caption">
-                                    <h4 class="product-name">
-                                        <a href="#"><%
-                                            out.print(list.get(i).getProductName());
-                                        %></a>
-                                    </h4>
-                                    <div class="product-price-group">
-                                        <span class="product-price"><%
-                                            out.print("$" + list.get(i).getProductPrice()); %></span>
-                                    </div>
-                                    <div class="ht-btn-group">
-                                        <a href="#" onclick="return false;" class="into">加入购物车</a>
-                                        <div title="<%out.print(list.get(i).getProductId());%>"></div>
-                                        <div title="1"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <%
-                            }
-                        %>
+                        <%--<%--%>
+                        <%--for (int i = 0; i < list.size(); i++) {--%>
+                        <%--%>--%>
+                        <%--<div class="col-sm-6 col-md-4 col-lg-3">--%>
+                        <%--<!-- Product item -->--%>
+                        <%--<div class="product-item">--%>
+                        <%--<a href="Product_detail_Servlet?idd=<%out.print(list.get(i).getProductId());%>">--%>
+                        <%--<img src="images/<%out.print(list.get(i).getDefaultImg());%>" alt="image">--%>
+                        <%--</a>--%>
+                        <%--<div class="product-caption">--%>
+                        <%--<h4 class="product-name">--%>
+                        <%--<a href="#"><%--%>
+                        <%--out.print(list.get(i).getProductName());--%>
+                        <%--%>--%>
+                        <%--</a>--%>
+                        <%--</h4>--%>
+                        <%--<div class="product-price-group">--%>
+                        <%--<span class="product-price"> <%--%>
+                        <%--out.print("$" + list.get(i).getProductPrice());--%>
+                        <%--%>--%>
+                        <%--</span>--%>
+                        <%--</div>--%>
+                        <%--<div class="ht-btn-group">--%>
+                        <%--<a href="#" onclick="return false;" class="into">加入购物车</a>--%>
+                        <%--<div title="<%out.print(list.get(i).getProductId());%>"></div>--%>
+                        <%--<div title="1"></div>--%>
+                        <%--</div>--%>
+                        <%--</div>--%>
+                        <%--</div>--%>
+                        <%--</div>--%>
+                        <%--<%--%>
+                        <%--}--%>
+                        <%--%>--%>
                     </div>
                 </div>
-                <div role="tabpanel" class="tab-pane" id="tab-review"></div>
             </div>
+            <div role="tabpanel" class="tab-pane" id="tab-review"></div>
         </div>
     </div>
+</div>
 </div>
 <!-- Process order -->
 <section class="process">
@@ -358,13 +333,11 @@
     <div class="footer-bottom">
         <div class="container">
             <p>
-                Copyright &copy; 2017.Company name All rights reserved.<a
-                    target="_blank" href="#"></a>
+                Copyright &copy; 2017.Company name All rights reserved.
+                <a target="_blank" href="#"></a>
             </p>
         </div>
     </div>
 </footer>
-
-
 </body>
 </html>

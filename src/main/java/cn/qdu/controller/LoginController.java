@@ -1,5 +1,6 @@
 package cn.qdu.controller;
 
+import cn.qdu.dao.UserInfoDao;
 import cn.qdu.entity.UserInfo;
 import cn.qdu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,45 +15,28 @@ import javax.servlet.http.HttpSession;
 public class LoginController {
     @Autowired
     UserService userService;
-
-
-    @RequestMapping("test")
-    public String index(){
-        return "login";
-    }
+    @Autowired
+    UserInfoDao userInfoDao;
 
     @ResponseBody
     @RequestMapping("/login")
     public String login(UserInfo userInfo, HttpSession session){
         String result = userService.login(userInfo);
         if ("true".equals(result)){
-        // 登录成功将用户名存入session
+        // 登录成功将用户名和用户存入session
             session.setAttribute("name",userInfo.getUserName());
-            session.setMaxInactiveInterval(10 * 60);
+            UserInfo loginUserInfo = userInfoDao.findByNameAndPassword(userInfo);
+            session.setAttribute("loginUserInfo",loginUserInfo);
+            session.setMaxInactiveInterval(10 * 60 * 60);
         }
         return result;
-        /*if (list != null) {
-            if (user.getUserName().equals("admin")) {
-                response.getWriter().print("admin");
-            } else if (list.get(0).getUserStatus().equals("已锁定")) {
-                response.getWriter().print("已锁定");
-            } else {
-                request.getSession().setAttribute("name",
-                        list.get(0).getUserName());
-                request.getSession().setMaxInactiveInterval(10 * 60);
-                // response.sendRedirect("index.jsp");
-                response.getWriter().print("true");
-            }
-
-        } else {
-            request.getSession().setAttribute("error", "密码错误，请重新登录！");
-            // response.sendRedirect("login.jsp");
-            response.getWriter().print("false");
-        }*/
     }
 
-    @RequestMapping("logOut")
-    public void logOut(HttpServletRequest request){
+    @RequestMapping("/logout")
+    public void logout(HttpServletRequest request){
         request.getSession().removeAttribute("name");
+        request.getSession().removeAttribute("loginUserInfo");
+        request.getSession().removeAttribute("productIdAndCount");
+        request.getSession().removeAttribute("productInfoAndCount");
     }
 }

@@ -82,7 +82,7 @@ $(function () {
 
 
     // 商品管理
-    $("a.li21").click(function (e) {  // 商品表格初始化
+    $("a.li21").click(function () {  // 商品表格初始化
         $("div#title").show();
         $("table.li21").show().siblings().hide();
         // 移除原先的记录
@@ -93,7 +93,7 @@ $(function () {
             if (msg != null) {
                 count = msg.p;
                 $.each(msg.l, function (i, list) {
-                    $("button.li211").parent().parent().before("<tr><td>" + list.productId + "</td><td>" + list.productName + "</td><td><input type='text' class='form-control col-sm-1' name='changePrice' value='" + list.productPrice + "'></td><td><input type='text' class='form-control col-sm-1'  name='changeInventory' value='" + list.productInventory + "'></td><td><textarea cols='20' rows='3' disabled>" + list.productDetail + "</textarea></td><td>" + list.productTypeInfo.productType + "</td><td><img style='height:50px;width:50px' src='images/" + list.defaultImg + "'></td><td><button class='li212 btn-danger'>删除</button></td></tr>");
+                    $("button.li211").parent().parent().before("<tr><td>" + list.productId + "</td><td>" + list.productName + "</td><td><input type='text' class='form-control col-sm-1' name='changePrice' value='" + list.productPrice + "'></td><td><input type='text' class='form-control col-sm-1'  name='changeInventory' value='" + list.productInventory + "'></td><td><textarea cols='20' rows='3' disabled>" + list.productDetail + "</textarea></td><td>" + list.productTypeInfo.productType + "</td><td><img style='height:50px;width:50px' src='images/" + list.defaultImg + "' name='" + list.defaultImg + "'></td><td><button class='li212 btn-danger'>删除</button></td></tr>");
                 });
             }
 
@@ -138,14 +138,21 @@ $(function () {
                 }
             });
 
-
             // 添加删除商品事件
             $("button.li212").click(function () {
                 var productId = $(this).parent().parent().find("td:first").text();
-                $.post("DeleteProduct", {"productId": productId});
+                var imgName = $(this).parent().parent().find("img").attr("name");
+                $.post("DeleteProduct",
+                    {
+                        "productId": productId,
+                        "imgName": imgName
+                    },
+                    function () {
+                        $("a.li21").trigger("click");//商品列表初始化
+                    });
                 // $(this).parent().parent().hide(); //隐藏该行
-                $("a.li21").trigger("click");
             });
+
         }, "json");
 
         // 商品类型下拉框加载
@@ -198,27 +205,6 @@ $(function () {
             formData.append('productInventory', productInventory);
             formData.append('productDetail', productDetail);
             formData.append('productType', productType);
-            // $.post("InsertProduct", {
-            // 	"productId" : productId,
-            // 	"productName" : productName,
-            // 	"productPrice":productPrice,
-            // 	"productInventory":productInventory,
-            // 	"productDetail":productDetail,
-            // 	"productType":productType,
-            //    "file":formData
-            // }, function(msg) {
-            // 	if ( msg=="true") {
-            // 		alert("成功添加记录！");
-            // 		$("input").val("");
-            // 		$("textarea[name='productDetail']").val("");
-            // 		count=count+1;
-            // 		var lastPage= count%5==0?parseInt(count/5):parseInt(count/5)+1;
-            // 		currPage=lastPage;
-            // 		$("a.li21").trigger("click");
-            // 	}else{
-            // 		alert("您插入的数据有误！");
-            // 	}
-            // }, "text");
             $.ajax({
                 url: 'InsertProduct',
                 type: 'POST',
@@ -227,7 +213,7 @@ $(function () {
                 cache: false,
                 contentType: false,
                 processData: false,
-                dataType:"text",//回传函数类型
+                dataType: "text",//回传函数类型
                 success: function (msg) {
                     if (msg == "true") {
                         alert("成功添加记录！");
@@ -241,7 +227,7 @@ $(function () {
                         alert("您插入的数据有误！");
                     }
                 },
-                error: function (r,s,e) {
+                error: function (r, s, e) {
                     //alert("error"+r.status+"  "+r.readyState+"  "+s+"  "+r.responseText);
                     alert("您插入的数据有误！");
                 }

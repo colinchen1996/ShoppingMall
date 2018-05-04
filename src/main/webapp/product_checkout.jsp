@@ -2,10 +2,9 @@
 <%@page import="java.util.HashMap" %>
 <%@page import="java.util.Iterator" %>
 <%@page import="java.util.Map" %>
-<%@page import="org.apache.jasper.tagplugins.jstl.core.ForEach" %>
+<%--<%@page import="org.apache.jasper.tagplugins.jstl.core.ForEach" %>--%>
 <%@page import="cn.qdu.entity.*" %>
 <%@page import="cn.qdu.dao.*" %>
-<%--@page import="org.qdu.servlet.*"--%>
 <%@page import="java.util.List" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
@@ -35,109 +34,129 @@
     <link rel="stylesheet" type="text/css" href="css/fw.css" media="screen">
     <script src="js/jquery-3.1.0.min.js"></script>
     <%
-        List<ProductInfo> productList = new ArrayList<ProductInfo>();
-        List countList = new ArrayList();
-        if (null != (List) request.getAttribute("countlist")) {
-            countList = (List) request.getAttribute("countlist");
+        Map<ProductInfo, Integer> productInfoAndCount = new HashMap();
+        if (request.getSession().getAttribute("productInfoAndCount") != null) {
+            productInfoAndCount = (Map<ProductInfo, Integer>) request.getSession().getAttribute("productInfoAndCount");
         }
-        if (null != (List) request.getAttribute("list")) {
-            productList = (List) request.getAttribute("list");
-        }
-        //int count = (int)request.getSession().getAttribute("count");
     %>
     <script>
         $(function () {
-            var totlecount = 0;
-
-            $.post("AddCartServlet", {"action": "totalcount"}, function (msg) {
-                totlecount = totlecount + parseInt(msg);
-                $('.totlecount').html(totlecount);
-            }, "text");
+            $.post("/getCartCount",
+                function (msg) {
+                    $('.totalCount').html(msg);
+                }, "text");
 
             //删除一条记录
             $('.name61').click(function () {
-                alert('是否删除')
-                var index = $(this).prop('title');
-                $.post("DeleteCartServlet", {"deleteProductId": index}
-                    , function () {
+                var deleteProductId = $(this).prop('title');
+                $.post("/deleteCart",
+                    {"deleteProductId": deleteProductId},
+                    function (msg) {//改变右上角图标上的物品数量
+                        $('.totalCount').html(msg);
                     }, "text");
                 //-------
-                $(this).parent().detach();
-                $('.text').trigger('change')
-            })
+                $(this).prev().html(0.00);
+                $(this).parent().remove();
+                total();
+            });
             //减
             $('.a').click(function () {
+                var productId = $(this).parent().parent().next().next().next().prop('title');
                 if ($(this).next().prop('value') <= 1) {
-                    alert('是否删除？')
-                    $(this).parent().parent().parent().detach();
-                    $('.text').trigger('change')
-                }
-                else {
+                    $.post("/deleteCart",
+                        {"deleteProductId": productId},
+                        function (msg) {//改变右上角图标上的物品数量
+                            $('.totalCount').html(msg);
+                        }, "text");
+                    $(this).parent().parent().parent().remove();
+                    total();//计算总价
+                } else {
                     //input 显示减1
-                    $(this).next().prop('value', $(this).next().prop('value') - 1)
-                    $('.text').trigger('change')
+                    $(this).next().prop('value', $(this).next().prop('value') - 1);
+                    $.post("/addCart",
+                        {
+                            "productId": productId,
+                            "count": -1
+                        }, function () {
+                        }, "text");
+                    $('.text').trigger('change');
                 }
-            })
+            });
             //加
             $('.b').click(function () {
                 //input 显示+1
-                $(this).prev().prop('value', parseInt($(this).prev().prop('value')) + 1)
-                $('.text').trigger('change')
-            })
+                var productId = $(this).parent().parent().next().next().next().prop('title');
+                $(this).prev().prop('value', parseInt($(this).prev().prop('value')) + 1);
+                $.post("/addCart",
+                    {
+                        "productId": productId,
+                        "count": 1
+                    }, function () {
+                    }, "text");
+                $('.text').trigger('change');
+            });
             //change事件
             $('.text').change(function () {
-                var $price = $(this).parent().parent().next().text()
-                var $count = parseInt($(this).prop('value'))
-                $(this).parent().parent().next().next().html('<h6>' + $price * $count + '.00' + '</h6>')
-                $totle()
-            })
+                var price = $(this).parent().parent().next().text();
+                var count = parseInt($(this).prop('value'));
+                $(this).parent().parent().next().next().html('<h6>' + price * count + '.00' + '</h6>');
+                total();
+            });
 
             //总计
-            function $totle() {
+            function total() {
                 var sum = 0;
                 $(".name51").each(function () {
                     sum += parseFloat($(this).text());
-                    $(".name3_2").text(sum);
-                })
+                });
+                $(".name3_2").text(sum);
             }
 
             //提交订单
             $('#content4').click(function () {
-            })
+                $.get("/countOrder", function (msg) {
+                    if (msg == "false1") {
+                        alert("请先登录!");
+                    } else if (msg == "false2") {
+                        alert("请先购买商品!");
+                    } else {
+                        window.location.href = "order_index.jsp";
+                    }
+                }, "text");
+            });
+
             //克隆一条记录
             var $clone = $('.content2').clone(true);
-            $('.text').trigger('change');
-            //
             $('.content2').remove();
+
             //加入并修改克隆的记录
-            <%for(int i=0;i<productList.size();i++){%>
-            var $Newclone = $clone.clone(true);
-            var $divs = $Newclone.children();
-            $($divs[0]).html('<img src="images/<%=productList.get(i).getDefaultImg()%>" width="70" alt="iPhone" title="iPhone">');
-            $($divs[1]).html('<h6><%=productList.get(i).getProductName()%></h6>');
-            $($divs[2]).children().children(".text").prop('value', <%=countList.get(i)%>);
-            $($divs[3]).html('<h6><%=productList.get(i).getProductPrice()%></h6>');
-            $($divs[5]).prop('title', <%=productList.get(i).getProductId()%>);
-            $('#content3').before($Newclone);
+            <% for(ProductInfo productInfo : productInfoAndCount.keySet()){ %>
+            var $row = $clone.clone(true);
+            var $divs = $row.children();
+            $($divs[0]).html('<img src="images/<%=productInfo.getDefaultImg()%>" width="70" alt="iPhone" title="iPhone">');
+            $($divs[1]).html('<h6><%=productInfo.getProductName()%></h6>');
+            $($divs[2]).find(".text").prop('value', <%=productInfoAndCount.get(productInfo)%>);
+            $($divs[3]).html('<h6><%=productInfo.getProductPrice()%></h6>');
+            $($divs[5]).prop('title', <%=productInfo.getProductId()%>);
+            $('#content3').before($row);
             $('.text').trigger('change');
-            <%}%>
+            <% } %>
 
             $("#yinuserInfo").click(function () {
-                $.post("getUserInfoServlet", {"name": $('#user').text()}, function () {
-                    window.location.href = "userInfo.jsp";
-                }, "text");
-            })
-        })
-
+                var userName = $('#user').text();
+                if (userName != null) {
+                    window.location.href = "/getUserInfo";
+                }
+            });
+        });
     </script>
 </head>
+
 <body>
 <%
     request.setCharacterEncoding("UTF-8");
     String name = (String) session.getAttribute("name");
-
 %>
-
 <div class="preloader">
     <i class="fa fa-spinner"></i>
 </div>
@@ -145,29 +164,27 @@
     <div class="container">
         <div class="row top-header">
             <div class="col-sm-3 text-left">
-                <a href="#" class="logo"> <img src="images/logo.png" alt="logo">
-                </a>
+                <a href="#" class="logo"> <img src="images/logo.png" alt="logo"></a>
             </div>
             <div class="col-sm-9">
                 <ul class="top-link pull-right">
                     <!--<li class="hidden-xs"><a href="">收藏夹</a></li>-->
                     <!--<li class="hidden-xs"><a href="#">分类</a></li>-->
-
-                    <li class="hidden-xs" id="yinuserInfo"><a id="user"><%
-                        if (name == null)
-                            out.print("");
-                        else {
-                            out.print(name);
-                        }
-                    %></a></li>
-
-                    <li class="hidden-xs"><a id="user" href="#">
-
-                    </a></li>
-                    <li class="dropdown hidden-xs"><a href="#"
-                                                      class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
-                                                      aria-haspopup="true" aria-expanded="false">我的账户 <span
-                            class="caret"></span></a>
+                    <li class="hidden-xs" id="yinuserInfo">
+                        <a id="user"><%
+                            if (name == null)
+                                out.print("");
+                            else {
+                                out.print(name);
+                            }
+                        %></a>
+                    </li>
+                    <%--<li class="hidden-xs"><a id="user" href="#">
+                    </a></li>--%>
+                    <li class="dropdown hidden-xs">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
+                           aria-haspopup="true" aria-expanded="false">我的账户
+                            <span class="caret"></span></a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a href="login.jsp">登录</a></li>
                             <li><a href="register.jsp">注册</a></li>
@@ -176,8 +193,8 @@
                     </li>
                     <li class="pull-right">
                         <div class="cart dropdown">
-                            <a href="countCart" class="cart-item dropdown-toggle"> <span class="totlecount">0</span><i
-                                    class="fa fa-cart-plus"></i>
+                            <a href="countCart" class="cart-item dropdown-toggle">
+                                <span class="totalCount">0</span><i class="fa fa-cart-plus"></i>
                             </a>
                         </div>
                     </li>
@@ -191,10 +208,10 @@
                 <div class="col-sm-1 col-md-1 col-lg-2 p-0">
                     <div class="dropdown category-bar">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                           role="button" aria-haspopup="true" aria-expanded="true"><!--  <i
-							class="fa fa-bars"> --></i><span class="li_size"> Seven商城 </span>
+                           role="button" aria-haspopup="true" aria-expanded="true">
+                            <!--<i class="fa fa-bars"></i>-->
+                            <span class="li_size"> 药店商城 </span>
                         </a>
-
                     </div>
                 </div>
                 <div class="col-sm-8 col-md-8 col-lg-7 p-0">
@@ -213,9 +230,9 @@
                                  id="bs-example-navbar-collapse-1">
                                 <ul class="nav navbar-nav li_size">
                                     <li><a href="index.jsp">主页</a></li>
-                                    <li><a href="/getFruit">鲜果</a></li>
-                                    <li><a href="/getFresh">生鲜</a></li>
-                                    <li><a href="/getVegetables">蔬菜</a></li>
+                                    <li><a href="/getProducts?productTypeId=1">中药</a></li>
+                                    <li><a href="/getProducts?productTypeId=2">西药</a></li>
+                                    <li><a href="/getProducts?productTypeId=3">儿童药品</a></li>
                                     <li><a href="about.jsp">商城简介</a></li>
                                 </ul>
                             </div>
@@ -234,7 +251,7 @@
 </header>
 <div class="heading-inner-page">
     <div class="container">
-        <h2>付款</h2>
+        <h2><span style="color: #0b0b0b;font-weight: bold">下单</span></h2>
     </div>
 </div>
 <!-- Checkout -->
@@ -244,38 +261,34 @@
         <div class="name2"><h6>图片</h6></div>
         <div class="name3"><h6>商品名称</h6></div>
         <div class="name4"><h6>数量</h6></div>
-        <div class="name5"><h6>单价</h6></div>
-        <div class="name6"><h6>金额</h6></div>
+        <div class="name5"><h6>单价(元)</h6></div>
+        <div class="name6"><h6>金额(元)</h6></div>
         <div class="name7"><h6>操作</h6></div>
     </div>
     <div class="content2">
         <div class="name21"><img src="images/1.jpg" width="70" alt="iPhone" title="iPhone"></div>
-        <div class="name31"><h6>
-            名称
-        </h6></div>
+        <div class="name31"><h6>名称</h6></div>
         <div class="name41">
             <div class="name41_1" style="margin-left:40px">
                 <input type="button" value="-" class="a">
-                <input type="text" value="5" name="num" class="text">
+                <input type="text" value="0" name="num" class="text">
                 <input type="button" value="+" class="b">
             </div>
         </div>
-        <div class="name51_1"><h6>
-            5
-        </h6></div>
-        <div class="name51"><h6>10.00</h6></div>
+        <div class="name51_1"><h6>0</h6></div>
+        <div class="name51"><h6>0.00</h6></div>
         <div class="name61" title="a"><a><h6>删除</h6></a></div>
     </div>
     <div id="content3">
-        <div class="name3_1">合计 :</div>
+        <div class="name3_1">合计(元) :</div>
         <div class="name3_2">00.00</div>
-        <div class="name3_1">邮费 :</div>
+        <div class="name3_1">邮费(元) :</div>
         <div class="name3_2_1">00.00</div>
-        <div class="name3_1">总计 :</div>
+        <div class="name3_1">总计(元) :</div>
         <div class="name3_2">00.00</div>
     </div>
     <div id="content4">
-        <a style="float:right;margin-right:180px;" class="btn btn-primary" href="countOrder">提交订单</a>
+        <a style="float:right;margin-right:180px;" class="btn btn-primary" href="#">提交订单</a>
     </div>
 </div>
 <!-- Process order -->

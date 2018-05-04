@@ -4,19 +4,17 @@ import cn.qdu.dao.AddressInfoDao;
 import cn.qdu.dao.OrderInfoDao;
 import cn.qdu.dao.OrderItemDao;
 import cn.qdu.dao.ProductInfoDao;
-import cn.qdu.entity.AddressInfo;
-import cn.qdu.entity.OrderInfo;
-import cn.qdu.entity.OrderItem;
-import cn.qdu.entity.ProductInfo;
+import cn.qdu.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class OrderController {
@@ -30,64 +28,60 @@ public class OrderController {
     @Autowired
     ProductInfoDao productInfoDao;
 
-    @RequestMapping("/getOrderInfo")
-    public void getOrderInfo(HttpServletRequest request, HttpServletResponse response) {
-        //request.setCharacterEncoding("utf-8");
-        String userId = request.getParameter("userId");
-        int id = Integer.valueOf(userId).intValue();
-        //User user = new User();
-        //user.setUserId(i);
-        //Object[] param = {user.getUserId()};
-        // List<Order> orderlist = new OrderDaoImpl().select("SELECT * from orderinfo where userId = ?", param);
-        List<OrderInfo> orderList = orderInfoDao.selectByUserId(id);
-        request.getSession().setAttribute("orderlist", orderList);
-
-        //Object[] param1 = {orderlist.get(0).getOrderId()};
-        //Object[] param2 = {orderlist.get(0).getAddressId()};
-        //List<OrderItem> orderItemlist = new OrderItemDaoImpl().select("SELECT * from orderItem where orderId = ?", param1);
-        List<OrderItem> orderItemList = orderItemDao.selectByOrderId(orderList.get(0).getOrderId());
-        //List<AddressInfo> addresslist = new AddressDaoImpl().selectAddress("SELECT * from addressinfo WHERE addressId= ?", param2);
-        List<AddressInfo> addressList = addressInfoDao.selectByAddressId(orderList.get(0).getAddressInfo().getAddressId());
-        request.getSession().setAttribute("orderItemlist", orderItemList);
-        request.getSession().setAttribute("addresslist", addressList);
-
-        //Object[] parma3 = {orderItemlist.get(0).getProductId()};
-        //List<ProductInfo> productlist = new ProductDaoImpl().select("SELECT * from productinfo WHERE productId= ?",parma3);
-        ProductInfo productInfo = productInfoDao.selectByPrimaryKey(orderItemList.get(0).getProductInfo().getProductId());
-
-        request.getSession().setAttribute("productlist", productInfo);
-        try {
-            response.sendRedirect("userInfo.jsp");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * 购物车结算进入下单页面
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
     @RequestMapping("/countOrder")
-    public void countOrder(HttpServletRequest request,HttpServletResponse response) {
-        Map productMap = (HashMap) request.getSession().getAttribute("productMap");
-        //CartDaoImpl cartDaoImpl = new CartDaoImpl();
-        List<ProductInfo> productInfoList = new ArrayList<ProductInfo>();
-        List countList = new ArrayList();
-        Iterator iter = productMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            int productId = (Integer) entry.getKey();
-            int count = (Integer) entry.getValue();
-            countList.add(count);
-            //List<Product> cartList = cartDaoImpl.getProductById(productId);
+    public String countOrder(HttpServletRequest request) {
+        String userName = (String) request.getSession().getAttribute("name");
+        if (userName == null) {
+            return "false1";
+        }
+        Map<Integer, Integer> productIdAndCount = (HashMap<Integer, Integer>) request.getSession().getAttribute("productIdAndCount");
+        if (productIdAndCount == null || productIdAndCount.isEmpty()) {
+            return "false2";
+        }
+        Map<ProductInfo, Integer> productInfoAndCount = new HashMap<ProductInfo, Integer>();
+        for (Integer productId : productIdAndCount.keySet()) {
             ProductInfo productInfo = productInfoDao.selectByPrimaryKey(productId);
-            productInfoList.add(productInfo);
+            Integer count = productIdAndCount.get(productId);
+            productInfoAndCount.put(productInfo, count);
         }
-        request.setAttribute("productInfoList", productInfoList);
-        request.setAttribute("countList", countList);
-        try {
-            request.getRequestDispatcher("order_index.jsp").forward(request, response);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        request.getSession().setAttribute("productInfoAndCount", productInfoAndCount);
+        return "true";
     }
 
+
+    @RequestMapping("/orderSucceed")
+    public String orderSuccessd(HttpServletRequest request, OrderInfo orderInfo) {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        orderInfo.setOrderDate(sdf.format(date));
+        OrderStatusInfo orderStatusInfo = new OrderStatusInfo();
+        orderStatusInfo.setOrderStatusId(0);
+        orderInfo.setOrderStatusInfo(orderStatusInfo);
+        UserInfo userInfo = (UserInfo) request.getSession().getAttribute("loginUserInfo");
+        orderInfo.setUserInfo(userInfo);
+        Map<ProductInfo, Integer> productInfoAndCount = (HashMap<ProductInfo, Integer>) request.getSession().getAttribute("productInfoAndCount");
+        orderInfoDao.insert(orderInfo);
+        int orderId = orderInfo.getOrderId();
+        for (ProductInfo productInfo : productInfoAndCount.keySet()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderId(orderId);
+            orderItem.setProductInfo(productInfo);
+            orderItem.setProductCount(productInfoAndCount.get(productInfo));
+            orderItemDao.insert(orderItem);
+        }
+        //下完单清空购物车
+        request.getSession().setAttribute("productIdAndCount", new HashMap());
+        request.getSession().setAttribute("productInfoAndCount", new HashMap());
+        AddressInfo addressInfo = addressInfoDao.selectByAddressId(orderInfo.getAddressInfo().getAddressId());
+        String address = addressInfo.getProvince()+"/" + addressInfo.getCity()+"/" + addressInfo.getArea()+"/" + addressInfo.getStreet();
+        request.getSession().setAttribute("address",address);
+        return "redirect:order_succeed.jsp?orderPrice=" + orderInfo.getOrderPrice() + "&orderId=" + orderId;
+    }
 }

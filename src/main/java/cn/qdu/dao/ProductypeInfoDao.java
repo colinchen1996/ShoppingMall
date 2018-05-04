@@ -22,6 +22,8 @@ public interface ProductypeInfoDao {
     int selectProductType(ProductypeInfo productypeInfo);//根据商品种类或者商品种类id查询该商品种类或者id是否存在
     
     int selectProductTypeIdByType(String productType);
+
+    String selectProductTypeByTypeId(Integer productTypeId);//根据商品类型id查找产品类型名称
     
     
 }

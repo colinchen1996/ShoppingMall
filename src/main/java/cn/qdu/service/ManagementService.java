@@ -23,7 +23,7 @@ public interface ManagementService {
 	
 	List<ProductInfo> selectProductByPage(int pageNum, int pageSize);
 	
-	void deleteProduct(int productId);
+	int deleteProduct(int productId);
 	
 	boolean selectProductIfExist(ProductInfo productInfo);//根据商品id或商品名查询该商品是否已经存在
 	

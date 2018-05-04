@@ -30,6 +30,10 @@
     select productTypeId from productypeinfo
     where productType = #{productType,jdbcType=VARCHAR}
   </select>
+  <select id="selectProductTypeByTypeId" resultType="java.lang.String" parameterType="java.lang.Integer">
+    select productType from productypeinfo
+    where productTypeId = #{productTypeId,jdbcType=INTEGER}
+  </select>
   
   
   

@@ -23,11 +23,6 @@ public class ManagementController {
     @Autowired
     ManagementService managementServiceImpl;
 
-    @RequestMapping("Index")
-    public String index() {
-        return "management";
-    }
-
     @ResponseBody
     @RequestMapping("SearchProductType")
     public Object searchProductType() {
@@ -69,9 +64,17 @@ public class ManagementController {
     }
 
     @RequestMapping("DeleteProduct")
-    public String deleteProduct(int productId) {
-        managementServiceImpl.deleteProduct(productId);
-        return null;
+    public void deleteProduct(int productId,String imgName,HttpServletResponse response) {
+        int result = managementServiceImpl.deleteProduct(productId);
+        if(result > 0){
+            File file = new File("D:\\IDEA_WorkSpace\\GraduationProject\\ShoppingMall\\src\\main\\webapp\\images\\"+imgName);
+            file.delete();
+            try {
+                response.getWriter().print(0);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @ResponseBody
@@ -97,7 +100,7 @@ public class ManagementController {
                     try {
                         in = file.getInputStream();
                         System.out.println(file.getOriginalFilename());
-                        out = new FileOutputStream("D:\\IDEA_WorkSpace\\GraduationProject\\ShoppingMall\\src\\main\\webapp\\medicineImg\\" + file.getOriginalFilename());
+                        out = new FileOutputStream("D:\\IDEA_WorkSpace\\GraduationProject\\ShoppingMall\\src\\main\\webapp\\images\\" + file.getOriginalFilename());
                         byte[] bytes = new byte[1024];
                         int by = 0;
                         while ((by = in.read(bytes)) != -1) {
